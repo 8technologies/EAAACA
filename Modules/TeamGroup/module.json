@@ -1,0 +1,14 @@
+{
+    "name": "TeamGroup",
+    "alias": "teamgroup",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\TeamGroup\\Providers\\TeamGroupServiceProvider",
+        "Modules\\TeamGroup\\Providers\\EventServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,20 @@
+<?php
+
+namespace Modules\TeamGroup\Policies;
+
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class TeamPolicy
+{
+    use HandlesAuthorization;
+
+    /**
+     * Create a new policy instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        //
+    }
+}

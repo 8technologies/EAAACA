@@ -1,0 +1,195 @@
+<?php
+
+namespace Modules\System\Entities;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use EloquentFilter\Filterable;
+use Nicolaslopezj\Searchable\SearchableTrait;
+
+class FailedJob extends Model
+{
+    use SoftDeletes;
+
+    use Filterable;
+    use SearchableTrait;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table;
+
+    /**
+     * The connection name for the model.
+     *
+     * @var string
+     */
+    protected $connection;
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = true;
+
+    /**
+     * The attributes that are not mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [
+        'id',
+    ];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'failed_at',
+    ];
+
+    /**
+     * Fillable fields for a Profile.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'description',
+        'details',
+        'userType',
+        'userId',
+        'route',
+        'ipAddress',
+        'userAgent',
+        'locale',
+        'referer',
+        'methodType',
+    ];
+
+    protected $casts = [
+        'description'   => 'string',
+        'details'       => 'string',
+        'user'          => 'integer',
+        'route'         => 'string',
+        'ipAddress'     => 'string',
+        'userAgent'     => 'string',
+        'locale'        => 'string',
+        'referer'       => 'string',
+        'methodType'    => 'string',
+    ];
+
+    /**
+     * Searchable rules.
+     *
+     * @var array
+     */
+    protected $searchable = [
+        /**
+         * @var array
+         */
+        'columns' => [
+            'laravel_logger_activity.description' => 10,
+            'laravel_logger_activity.details' => 10,
+            'laravel_logger_activity.route' => 10,
+            'laravel_logger_activity.ipAddress' => 10,
+            'laravel_logger_activity.userAgent' => 10,
+            'laravel_logger_activity.methodType' => 10,
+        ]
+    ];
+
+    /**
+     * Create a new instance to set the table and connection.
+     *
+     * @return void
+     */
+    public function __construct($attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('LaravelLogger.loggerDatabaseTable');
+        $this->connection = config('LaravelLogger.loggerDatabaseConnection');
+    }
+
+    /**
+     * Get the database connection.
+     */
+    public function getConnectionName()
+    {
+        return $this->connection;
+    }
+
+    /**
+     * Get the database connection.
+     */
+    public function getTableName()
+    {
+        return $this->table;
+    }
+
+    public function modelFilter()
+    {
+        return $this->provideFilter(\Modules\System\ModelFilters\EntityFilter::class);
+    }
+
+    /**
+     * An activity has a user.
+     *
+     * @var array
+     */
+    public function user()
+    {
+        return $this->hasOne(config('LaravelLogger.defaultUserModel'));
+    }
+
+    public function userAccount(){
+        return $this->setConnection('mysql')->belongsTo('App\Models\User', 'userId');
+    }
+
+    /**
+     * Get a validator for an incoming Request.
+     *
+     * @param array $merge (rules to optionally merge)
+     *
+     * @return array
+     */
+    public static function rules($merge = [])
+    {
+        if (app() instanceof \Illuminate\Foundation\Application) {
+            $route_url_check = \Illuminate\Foundation\Application::VERSION < 5.8 ? 'active_url' : 'url';
+        } else {
+            $route_url_check = 'url';
+        }
+
+        return array_merge(
+            [
+                'description'   => 'required|string',
+                'details'       => 'nullable|string',
+                'userType'      => 'required|string',
+                'userId'        => 'nullable|integer',
+                'route'         => 'nullable|'.$route_url_check,
+                'ipAddress'     => 'nullable|ip',
+                'userAgent'     => 'nullable|string',
+                'locale'        => 'nullable|string',
+                'referer'       => 'nullable|string',
+                'methodType'    => 'nullable|string',
+            ],
+            $merge
+        );
+    }
+
+    /**
+     * User Agent Parsing Helper.
+     *
+     * @return string
+     */
+    public function getUserAgentDetailsAttribute()
+    {
+        return \jeremykenedy\LaravelLogger\App\Http\Traits\UserAgentDetails::details($this->userAgent);
+    }
+}

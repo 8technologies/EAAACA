@@ -1,0 +1,17 @@
+{
+    "Content": true,
+    "Media": true,
+    "RolePermission": true,
+    "User": true,
+    "Notification": true,
+    "Message": true,
+    "Block": true,
+    "Layout": true,
+    "Field": true,
+    "TeamGroup": true,
+    "System": true,
+    "Taxonomy": true,
+    "Dashboard": true,
+    "Custom": true,
+    "Comment": true
+}

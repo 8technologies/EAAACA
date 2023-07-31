@@ -1,0 +1,128 @@
+<template>
+
+    <div class="">
+        <div id="toolbar">
+            <b-link :href="createUrl" class="add-item btn btn-primary">
+                <span class="fa fa-plus"></span> Add a Response
+            </b-link>
+        </div>
+
+        <BootstrapTable
+            :id="tableID"
+            ref="bootstrapTable"
+            :columns="columns"
+            :options="options"
+            :data-url="baseUrl"
+            :data-base="url">
+        </BootstrapTable>
+        
+        <bs-modal v-bind:modalAttributes="modalAttributes">
+            <dynamic-component :is="modalComponent" v-bind="modalComponentParams"></dynamic-component>
+        </bs-modal>
+
+        <bs-modal-delete v-bind:modalAttributes="modalAttributes">
+            <component :is="deleteComponent" v-bind="deleteComponentParams"></component>
+        </bs-modal-delete>
+    </div>
+
+</template>
+
+<script>
+    import ModalComponentsMixin from '@/Mixins/ModalComponents'
+    import BootstrapTableMixin from '@/Mixins/Plugins/BootstrapTable'
+
+    import FormCreate from './_FormCreate'
+    import FormEdit from './_FormEdit'
+    import FormDelete from './_FormDelete'
+    import FormShow from './_FormShow'
+
+    export default {
+        mixins: [
+            BootstrapTableMixin, 
+            ModalComponentsMixin,
+        ],
+        props: {
+            'createUrl': {
+                type: String,
+                default: route('dashboard.request-responses.create'),
+            },
+            'baseUrl': {
+                type: String,
+                default: route('dashboard.request-responses.index'),
+            },
+            'url': {
+                type: String,
+                default: route('dashboard.request-responses.index'),
+            },
+        },
+        components: {
+            FormCreate,
+            FormEdit,
+            FormDelete,
+            FormShow,
+        },
+
+        data() {
+            return {
+                addModalTitle: '#Add a Response',
+                columns: [{
+                    field: 'state',
+                    checkbox: true
+                }, {
+                    field: 'id',
+                    title: 'ID',
+                    sortable: 'true',
+                    // width: '120',
+                    visible: false,
+                }, {
+                    field: 'name',
+                    title: 'Name',
+                    // width: '120',
+                    visible: true,
+                    formatter: (value, row) => {
+                        return this.nameFormatter(value, row)
+                    },
+                }, {
+                    field: 'information_request_id',
+                    title: 'Information request',
+                    width: '220',
+                    sortable: 'true',
+                    visible: true,
+                    formatter: (value, row) => {
+                        return row.information_request.name
+                    },
+                }, {
+                    field: 'date_of_response',
+                    title: 'Date of response',
+                    sortable: 'true',
+                    width: '220',
+                    visible: true,
+                    formatter: (value, row) => {
+                        return this.dateTimeFormatter(value, row)
+                    },
+                }, {
+                    field: 'updated_at',
+                    title: 'Updated At',
+                    sortable: 'true',
+                    width: '220',
+                    visible: false,
+                    formatter: (value, row) => {
+                        return this.dateTimeFormatter(value, row)
+                    },
+                }, {
+                    field: 'actions',
+                    title: 'Actions',
+                    width: '65',
+                    // events: 'actionEvents',
+                    formatter: (value, row) => {
+                        // console.log(this.actionFormatter(value, row));
+                        return this.actionFormatter(value, row)
+                    },
+                }]
+            }
+        },
+
+    }
+
+</script>
+

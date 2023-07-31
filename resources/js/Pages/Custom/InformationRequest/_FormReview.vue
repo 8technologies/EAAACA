@@ -1,0 +1,34 @@
+<template>
+    <div>
+        <b-form @submit="update" :action="route('dashboard.information-requests.addreview', data.id)" method="PUT">
+
+            <entityForm ref="entityForm" :data="data" @updateParentFormValues="updateFormValues"/>
+
+            <div class="row no-gutters justify-content-end mt-3 form-btns-wrapper">
+                <b-button class="" id="submit" type="submit" variant="primary">
+                    <span class="" role="status" aria-hidden="true"></span>
+                    Add Review
+                </b-button>
+            </div>
+
+        </b-form>
+    </div>
+</template>
+<script>
+    import MessagesMixin from '@/Mixins/Messages'
+    import DBOperationsMixin from '@/Mixins/DBOperations'
+    import entityForm from './_FormAddReview'
+
+    export default {
+        mixins: [MessagesMixin, DBOperationsMixin],
+        props: ['data'],
+        components: {
+            entityForm,
+        },
+        data() {
+          return {
+                form: null,
+            }
+        },
+    }
+</script>
