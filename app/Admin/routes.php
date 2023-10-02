@@ -26,5 +26,13 @@ Route::group([
     $router->resource('events', EventController::class);
     $router->get('/calendar', 'HomeController@calendar')->name('calendar');
 
+
+    $router->resource('cases', CaseModelController::class);
+    $router->resource('countries', CountryController::class);
+    $router->resource('discussion-board-posts', DiscussionBoardPostController::class);
+    $router->resource('news-post-categories', NewsPostCategoryController::class);
+    $router->resource('news-posts', NewsPostController::class);
+
+
     $router->resource('gens', GenController::class);
 });

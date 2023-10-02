@@ -1,11 +1,10 @@
 <?php
 
-use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCaseModelsTable extends Migration
+class CreateNewsPostCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,14 +13,12 @@ class CreateCaseModelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('case_models', function (Blueprint $table) {
+        Schema::create('news_post_categories', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignIdFor(Administrator::class);
-            $table->integer('country_id')->nullable();
             $table->text('title')->nullable();
-            $table->string('status')->nullable();
-            $table->text('content')->nullable();
+            $table->text('photo')->nullable();
+            $table->text('details')->nullable();
         });
     }
 
@@ -32,6 +29,6 @@ class CreateCaseModelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('case_models');
+        Schema::dropIfExists('news_post_categories');
     }
 }

@@ -1,11 +1,12 @@
 <?php
 
+use App\Models\CaseModel;
 use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCaseModelsTable extends Migration
+class AddToCaseModelFindings extends Migration
 {
     /**
      * Run the migrations.
@@ -14,14 +15,11 @@ class CreateCaseModelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('case_models', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('case_model_findings', function (Blueprint $table) {
+            //
             $table->foreignIdFor(Administrator::class);
-            $table->integer('country_id')->nullable();
-            $table->text('title')->nullable();
-            $table->string('status')->nullable();
-            $table->text('content')->nullable();
+            $table->text('title')->nullable()->nullable();
+            $table->text('details')->nullable()->nullable();
         });
     }
 
@@ -32,6 +30,8 @@ class CreateCaseModelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('case_models');
+        Schema::table('case_model_findings', function (Blueprint $table) {
+            //
+        });
     }
 }
