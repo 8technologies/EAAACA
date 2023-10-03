@@ -2,20 +2,20 @@
 
 namespace App\Admin\Controllers;
 
-use App\Models\Country;
+use App\Models\Offence;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 
-class CountryController extends AdminController
+class OffenceController extends AdminController
 {
     /**
      * Title for current resource.
      *
      * @var string
      */
-    protected $title = 'Member States';
+    protected $title = 'Offence';
 
     /**
      * Make a grid builder.
@@ -24,16 +24,13 @@ class CountryController extends AdminController
      */
     protected function grid()
     {
-        $grid = new Grid(new Country());
-        $grid->disableBatchActions();
+        $grid = new Grid(new Offence());
         $grid->model()->orderBy('name', 'asc');
-        //quick search
         $grid->quickSearch('name');
-
-        $grid->column('flag', __('Flag'))->lightbox(['width' => 60, 'height' => 60])
-            ->sortable();
+        $grid->disableBatchActions();
         $grid->column('name', __('Name'))->sortable();
-        $grid->column('details', __('Details'));
+        $grid->column('description', __('Description'));
+
 
         return $grid;
     }
@@ -46,14 +43,14 @@ class CountryController extends AdminController
      */
     protected function detail($id)
     {
-        $show = new Show(Country::findOrFail($id));
+        $show = new Show(Offence::findOrFail($id));
 
         $show->field('id', __('Id'));
+        $show->field('name', __('Name'));
+        $show->field('description', __('Description'));
+        $show->field('deleted_at', __('Deleted at'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
-        $show->field('name', __('Name'));
-        $show->field('flag', __('Flag'));
-        $show->field('details', __('Details'));
 
         return $show;
     }
@@ -65,11 +62,10 @@ class CountryController extends AdminController
      */
     protected function form()
     {
-        $form = new Form(new Country());
+        $form = new Form(new Offence());
 
         $form->text('name', __('Name'))->rules('required');
-        $form->image('flag', __('Flag'));
-        $form->textarea('details', __('Details'));
+        $form->textarea('description', __('Description'));
 
         return $form;
     }

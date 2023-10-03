@@ -16,7 +16,7 @@ class CompanyController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Companies';
+    protected $title = 'Organizations';
 
     /**
      * Make a grid builder.
@@ -32,7 +32,7 @@ class CompanyController extends AdminController
         $grid->column('created_at', __('Created'))
             ->hide()
             ->sortable();
-        $grid->column('name', __('Company Name'))->sortable();
+        $grid->column('name', __('Organization Name'))->sortable();
         $grid->column('short_name', __('Short name'))->hide();
         //$grid->column('logo', __('Logo'));
         $grid->column('phone_number', __('Phone number'))->sortable();
@@ -98,22 +98,22 @@ class CompanyController extends AdminController
             }
             $users[$role->user->id] = $role->user->name;
         }
-        $form->select('administrator_id', __('Set Company Owner'))
+        $form->select('administrator_id', __('Set Organization Administrator'))
             ->options($users)
             ->rules('required');
 
-        $form->text('name', __('Company Name'))->rules('required');
-        $form->text('short_name', __('Company Short Name'))->rules('required');
+        $form->text('name', __('Organization Name'))->rules('required');
+        $form->text('short_name', __('Organization Short Name'))->rules('required');
         $form->text('details', __('Details'));
-        $form->image('logo', __('Company Logo'));
+        $form->image('logo', __('Organization Logo'));
         $form->text('phone_number', __('Phone Number'))->rules('required');
         $form->text('phone_number_2', __('Phone number 2'));
         $form->text('p_o_box', __('P o box'));
-        $form->email('email', __('Company Email'))->rules('required');
+        $form->email('email', __('Organization Email'))->rules('required');
         $form->text('address', __('Address'));
         $form->text('website', __('Website'));
         $form->text('subdomain', __('Subdomain'));
-        $form->color('color', __('Company Color'));
+        $form->color('color', __('Organization Color'));
         $form->text('welcome_message', __('Welcome message'));
         $form->text('type', __('Type'));
         /* $form->text('can_send_messages', __('Can send messages'));

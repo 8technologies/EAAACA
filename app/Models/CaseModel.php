@@ -10,6 +10,18 @@ class CaseModel extends Model
     use HasFactory;
 
 
+
+    //cases to array for select dropdown
+    public static function casesToArray()
+    {
+        $cases = CaseModel::all();
+        $casesArray = [];
+        foreach ($cases as $case) {
+            $casesArray[$case->id] = $case->title;
+        }
+        return $casesArray;
+    }
+
     //has many CaseContributor
     public function contributors()
     {

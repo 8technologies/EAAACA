@@ -32,6 +32,8 @@ Route::group([
     $router->resource('discussion-board-posts', DiscussionBoardPostController::class);
     $router->resource('news-post-categories', NewsPostCategoryController::class);
     $router->resource('news-posts', NewsPostController::class);
+    $router->resource('information-requests', InformationRequestController::class);
+    $router->resource('offences', OffenceController::class);
 
 
     $router->resource('gens', GenController::class);
