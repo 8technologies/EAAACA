@@ -59,13 +59,13 @@ class InformationRequestFilter extends ModelFilter
             case 'AWAITING RESPONSE':
                 return $this
                     ->where('information_requests.review_status_id', 1)
-                    ->doesntHave('request_responses')
-                    // ->whereRaw(
-                    //     "(SELECT COUNT(*) FROM request_responses 
-                    //     LEFT JOIN information_requests as xxxx on request_responses.information_request_id = xxxx.id
-                    //     WHERE information_requests.id = xxxx.id  
-                    //     ) = 0"
-                    // )
+                    // ->doesntHave('request_responses')
+                    ->whereRaw(
+                        "(SELECT COUNT(*) FROM request_responses 
+                        LEFT JOIN information_requests as xxxx on request_responses.information_request_id = xxxx.id
+                        WHERE information_requests.id = xxxx.id  
+                        ) = 0"
+                    )
                     ;
                 break;
 
@@ -73,8 +73,19 @@ class InformationRequestFilter extends ModelFilter
                 return $this
                     ->where('information_requests.review_status_id', 1)
                     // ->has('request_responses')
-                    ->whereNull('request_responses.feedback_status_id')
-                    ->leftJoin('request_responses', 'request_responses.information_request_id', '=', 'information_requests.id')
+                    ->whereRaw(
+                        "(SELECT COUNT(*) FROM request_responses 
+                        LEFT JOIN information_requests as xxxx on request_responses.information_request_id = xxxx.id
+                        WHERE information_requests.id = xxxx.id  
+                        ) > 0"
+                    )
+                    ->whereRaw(
+                        "(SELECT COUNT(*) FROM request_responses 
+                        LEFT JOIN information_requests as xxxx on request_responses.information_request_id = xxxx.id
+                        WHERE information_requests.id = xxxx.id  
+                        AND request_responses.feedback_status_id IN (4,5) 
+                        ) = 0"
+                    )
                     ;
                 break;
 

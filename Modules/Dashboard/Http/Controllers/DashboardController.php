@@ -43,7 +43,7 @@ class DashboardController extends Controller
         $controller = new InformationRequestController;    
 
         $arrayOrganizations = $organizations->map(function ($item, $key) use($controller, $request) {
-            $request2 = $request;
+            // $request2 = $request;
             $informationRequests = $controller->getDataByEntityStatus($request);
             // $information_request = 
 
@@ -51,22 +51,25 @@ class DashboardController extends Controller
                 'id' => $item->id,
                 'name' => $item->name,
                 'information_requests_count' => $item->information_requests_count,
-                'information_requests' => $informationRequests->map(function ($item2, $key2) use($controller, $request2, $item) {
-                    $request2['entity_status'] = $item2->entity_status;
-                    $request2['organization_id'] = $item->id;
-                    $request2['limit'] = '';
+                'information_requests' => $informationRequests->map(function ($item2, $key2) use($controller, $request, $item) {
+                    $request['entity_status'] = $item2->entity_status;
+                    $request['organization_id'] = $item->id;
+                    $request['limit'] = '';
+
+                    $count = $controller->getDataStatistics($request)->count();
+                    // remove request parameters
+                    $request->request->remove('entity_status');
+                    $request->request->remove('organization_id');
 
                     return [
                         'entity_status' => $item2->entity_status,
-                        'entity_status_count' => $controller->getDataStatistics($request2)->count(),
+                        'entity_status_count' => $count,
                     ];
                 }),
             ];
         });
 
         $data['organizations'] = $arrayOrganizations;
-
-        // dd( $data['organizations'] );
 
         if(checkAjaxJsonRequest($request))
         {

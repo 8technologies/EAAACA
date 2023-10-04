@@ -65,14 +65,9 @@ class InformationRequestStatsController extends Controller
         $controller = new InformationRequestController;
 
         $request['entity_status'] = 'NEW';
-        if ($request->user()->cannot('viewAny', Grievance::class)) {
+        if ($request->user()->cannot('viewAny', InformationRequest::class)) {
             return response(['message' => getUnAuthorizedAccessMessage('viewAny')], 403);
         }
-
-        // if ($request->exporttype) {
-        //     $data = $grievanceController->getData($request);
-        //     return $this->getExportedData($request, $data, 'Grievances - New');
-        // }
 
         if(checkAjaxJsonRequest($request))
         {
@@ -80,7 +75,103 @@ class InformationRequestStatsController extends Controller
             return $data;
         } else {
             $data['stats'] = $this->getStats();
-            return Inertia::render('Custom/InformationRequest/Index', ['data' => $data]);
+            return Inertia::render('Custom/InformationRequest/IndexNew', ['data' => $data]);
         }
     }
+
+    public function indexPending(Request $request)
+    {
+        $controller = new InformationRequestController;
+
+        $request['entity_status'] = 'PENDING';
+        if ($request->user()->cannot('viewAny', InformationRequest::class)) {
+            return response(['message' => getUnAuthorizedAccessMessage('viewAny')], 403);
+        }
+
+        if(checkAjaxJsonRequest($request))
+        {
+            $data = $controller->getData($request);
+            return $data;
+        } else {
+            $data['stats'] = $this->getStats();
+            return Inertia::render('Custom/InformationRequest/IndexPending', ['data' => $data]);
+        }
+    }
+
+    public function indexAwaitingResponse(Request $request)
+    {
+        $controller = new InformationRequestController;
+
+        $request['entity_status'] = 'AWAITING RESPONSE';
+        if ($request->user()->cannot('viewAny', InformationRequest::class)) {
+            return response(['message' => getUnAuthorizedAccessMessage('viewAny')], 403);
+        }
+
+        if(checkAjaxJsonRequest($request))
+        {
+            $data = $controller->getData($request);
+            return $data;
+        } else {
+            $data['stats'] = $this->getStats();
+            return Inertia::render('Custom/InformationRequest/IndexAwaitingResponse', ['data' => $data]);
+        }
+    }
+
+    public function indexAwaitingFeedback(Request $request)
+    {
+        $controller = new InformationRequestController;
+
+        $request['entity_status'] = 'AWAITING FEEDBACK';
+        if ($request->user()->cannot('viewAny', InformationRequest::class)) {
+            return response(['message' => getUnAuthorizedAccessMessage('viewAny')], 403);
+        }
+
+        if(checkAjaxJsonRequest($request))
+        {
+            $data = $controller->getData($request);
+            return $data;
+        } else {
+            $data['stats'] = $this->getStats();
+            return Inertia::render('Custom/InformationRequest/IndexAwaitingFeedback', ['data' => $data]);
+        }
+    }
+
+    public function indexMoreInformation(Request $request)
+    {
+        $controller = new InformationRequestController;
+
+        $request['entity_status'] = 'MORE INFORMATION NEEDED';
+        if ($request->user()->cannot('viewAny', InformationRequest::class)) {
+            return response(['message' => getUnAuthorizedAccessMessage('viewAny')], 403);
+        }
+
+        if(checkAjaxJsonRequest($request))
+        {
+            $data = $controller->getData($request);
+            return $data;
+        } else {
+            $data['stats'] = $this->getStats();
+            return Inertia::render('Custom/InformationRequest/IndexMoreInformation', ['data' => $data]);
+        }
+    }
+
+    public function indexCompleted(Request $request)
+    {
+        $controller = new InformationRequestController;
+
+        $request['entity_status'] = 'COMPLETED';
+        if ($request->user()->cannot('viewAny', InformationRequest::class)) {
+            return response(['message' => getUnAuthorizedAccessMessage('viewAny')], 403);
+        }
+
+        if(checkAjaxJsonRequest($request))
+        {
+            $data = $controller->getData($request);
+            return $data;
+        } else {
+            $data['stats'] = $this->getStats();
+            return Inertia::render('Custom/InformationRequest/IndexCompleted', ['data' => $data]);
+        }
+    }
+
 }

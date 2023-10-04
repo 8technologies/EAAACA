@@ -1,5 +1,5 @@
 <template>
-    <div class="mb-1">
+    <div id="information-subrequest" class="mb-1">
         <b-nav tabs id="nav" :class="'grievances-tabs'">
             <b-nav-item :href="route('dashboard.information-requests.index')" :class="'inertia-link'" :active="route().current('dashboard.information-requests.index')">
                 All <b-badge variant="secondary">{{ data.stats && data.stats.all_requests ? data.stats.all_requests : '0' }}</b-badge>
@@ -67,3 +67,8 @@
     // }
 </script>
 
+<style>
+    #information-subrequest ul li a {
+        padding: .5rem .8rem;
+    }
+</style>

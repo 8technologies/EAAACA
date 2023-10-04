@@ -43,13 +43,11 @@ Route::middleware(['auth', 'verified', 'activity'])->prefix('dashboard')->name('
     Route::resource('forum-topics', 'ForumTopicController');
 
     Route::get('/information-requests/new', 'InformationRequestStatsController@indexNew')->name('information-requests.new');
-    Route::get('/information-requests/pending', 'InformationRequestStatsController@indexNew')->name('information-requests.new');
-    Route::get('/information-requests/pending', 'InformationRequestStatsController@indexNew')->name('information-requests.pending');
-    Route::get('/information-requests/awaitingresponse', 'InformationRequestStatsController@indexNew')->name('information-requests.awaitingresponse');
-    Route::get('/information-requests/awaitingfeedback', 'InformationRequestStatsController@indexNew')->name('information-requests.awaitingfeedback');
-    Route::get('/information-requests/moreinformation', 'InformationRequestStatsController@indexNew')->name('information-requests.moreinformation');
-    Route::get('/information-requests/completed', 'InformationRequestStatsController@indexNew')->name('information-requests.completed');
-
+    Route::get('/information-requests/pending', 'InformationRequestStatsController@indexPending')->name('information-requests.pending');
+    Route::get('/information-requests/awaitingresponse', 'InformationRequestStatsController@indexAwaitingResponse')->name('information-requests.awaitingresponse');
+    Route::get('/information-requests/awaitingfeedback', 'InformationRequestStatsController@indexAwaitingFeedback')->name('information-requests.awaitingfeedback');
+    Route::get('/information-requests/moreinformation', 'InformationRequestStatsController@indexMoreInformation')->name('information-requests.moreinformation');
+    Route::get('/information-requests/completed', 'InformationRequestStatsController@indexCompleted')->name('information-requests.completed');
 
     Route::resource('information-requests', 'InformationRequestController');
     Route::get('information-requests/{id}/responses', 'InformationRequestController@getResponses')->name('information-requests.responses');
