@@ -232,20 +232,6 @@ class InformationRequest extends Model
         ]);
     }
 
-    public function scopeWithEntityStatusCount($query) 
-    {
-        $query->addSelect(['entity_status_count' => RequestResponse::select(
-            DB::raw('
-                COUNT(DISTINCT(information_requests.id))
-                AS entity_status_count')
-            )
-            ->rightJoin('information_requests as xxxx', 'request_responses.information_request_id', '=', 'xxxx.id')
-            
-            // ->groupBy('resolution.id')
-            // ->take(1)
-        ]);
-    }
-
 
 
 

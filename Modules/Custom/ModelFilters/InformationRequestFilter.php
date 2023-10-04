@@ -31,6 +31,7 @@ class InformationRequestFilter extends ModelFilter
         return $this->where('case_id', $id);
     }
 
+    
     public function organization($id)
     {
         return $this->where('organization_id', $id);
@@ -39,6 +40,19 @@ class InformationRequestFilter extends ModelFilter
     {
         return $this->where('organization_id', $id);
     }
+
+
+    public function memberState($id)
+    {
+        return $this->where('member_state_id', $id);
+    }
+    public function parentMemberState($id)
+    {
+        return $this->whereHas('organization', function($q) use($id){
+            $q->where('member_state_id', '=', $id);
+        });
+    }
+    
 
     // Filter 'entity_status'
     public function entityStatus($status)

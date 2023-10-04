@@ -71,6 +71,25 @@ class MemberState extends Model
     public function organizations(){
         return $this->hasMany(\Modules\Custom\Entities\Organization::class, 'member_state_id');
     }
+    public function information_requests()
+    {
+        return $this->hasManyThrough(
+            \Modules\Custom\Entities\InformationRequest::class,
+            \Modules\Custom\Entities\Organization::class,
+            'member_state_id',
+            'organization_id',
+            'id',
+            'id',
+        );
+    }
+    public function information_requests_incoming()
+    {
+        return $this->hasMany(
+            \Modules\Custom\Entities\InformationRequest::class,
+            'member_state_id', 
+            'id',
+        );
+    }
 
 
 

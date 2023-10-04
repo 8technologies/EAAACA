@@ -308,7 +308,7 @@ export default {
                     break;
 
                 case 'AWAITING FEEDBACK':
-                    formattedStatus = `<span class="rounded-pill btn btn-sm btn-outline-info text-nowrap d-block px-3">
+                    formattedStatus = `<span class="rounded-pill btn btn-sm btn-outline-secondary text-nowrap d-block px-3">
                         ${ status }
                     </span>`
                     break;

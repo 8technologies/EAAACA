@@ -17,8 +17,10 @@ use Nwidart\Modules\Facades\Module;
 use Illuminate\Support\Facades\Route;
 use Modules\Custom\Entities\CaseManagement;
 use Modules\Custom\Entities\InformationRequest;
+use Modules\Custom\Entities\MemberState;
 use Modules\Custom\Entities\Organization;
 use Modules\Custom\Http\Controllers\InformationRequestController;
+use Modules\Custom\Http\Controllers\InformationRequestStatsController;
 use Modules\System\Entities\Activity;
 
 class DashboardController extends Controller
@@ -34,18 +36,135 @@ class DashboardController extends Controller
         $data['information_requests'] = $this->getInformationRequests();
         $data['contact_points'] = $this->getContactPoints();
         $data['organization'] = Auth::user()->organization;
+        $data['chart_data'] = [];
+
+        $statsController = new InformationRequestStatsController;
+        foreach ($statsController->getStats() as $key => $value) {
+            $dataArray = array();
+
+            switch ($key) {
+                case 'new':
+                    $dataArray = array(
+                        "name" => 'NEW',
+                        "y" => $value,
+                    );
+                    break;
+
+                case 'pending':
+                    $dataArray = array(
+                        "name" => 'PENDING',
+                        "y" => $value,
+                    );
+                    break;
+
+                case 'awaitingresponse':
+                    $dataArray = array(
+                        "name" => 'AWAITING RESPONSE',
+                        "y" => $value,
+                    );
+                    break;
+
+                case 'awaitingfeedback':
+                    $dataArray = array(
+                        "name" => 'AWAITING FEEDBACK',
+                        "y" => $value,
+                    );
+                    break;
+
+                case 'moreinformation':
+                    $dataArray = array(
+                        "name" => 'MORE INFORMATION NEEDED',
+                        "y" => $value,
+                    );
+                    break;
+
+                case 'completed':
+                    $dataArray = array(
+                        "name" => 'COMPLETED',
+                        "y" => $value,
+                    );
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+
+            if ($key != 'all_requests') {
+                array_push($data['chart_data'], $dataArray);
+            }
+        }
+
+        // dd( $data['chart_data'] );
+
+        $controller = new InformationRequestController;          
+
+        $arrayMemberStates = [];
+        $memberStates = MemberState::
+            withCount(
+                'organizations',
+                'information_requests', 
+                'information_requests_incoming',
+            )
+            ->get();
+
+        $arrayMemberStates = $memberStates->map(function ($item, $key) use($controller, $request) {
+            $informationRequests = $controller->getDataByEntityStatus($request);
+
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'organizations_count' => $item->organizations_count,
+
+                'information_requests_count' => $item->information_requests_count,
+                'information_requests' => $informationRequests->map(function ($item2, $key2) use($controller, $request, $item) {
+                    $request['entity_status'] = $item2->entity_status;
+                    $request['parent_member_state_id'] = $item->id;
+                    $request['limit'] = '';
+
+                    $count = $controller->getDataStatistics($request)->count();
+                    // remove request parameters
+                    $request->request->remove('entity_status');
+                    $request->request->remove('parent_member_state_id');
+
+                    return [
+                        'entity_status' => $item2->entity_status,
+                        'entity_status_count' => $count,
+                    ];
+                }),
+
+                'information_requests_incoming_count' => $item->information_requests_incoming_count,
+                'information_requests_incoming' => $informationRequests->map(function ($item2, $key2) use($controller, $request, $item) {
+                    $request['entity_status'] = $item2->entity_status;
+                    $request['member_state_id'] = $item->id;
+                    $request['limit'] = '';
+
+                    $count = $controller->getDataStatistics($request)->count();
+                    // remove request parameters
+                    $request->request->remove('entity_status');
+                    $request->request->remove('member_state_id');
+
+                    return [
+                        'entity_status' => $item2->entity_status,
+                        'entity_status_count' => $count,
+                    ];
+                }),
+            ];
+        });
+
+        $data['member_states'] = $arrayMemberStates;
+        // dd( $data['member_states'] );
+
 
         // Get Organization's information request statistics
         $arrayOrganizations = [];
-        $organizations = Organization::with('information_requests')
-            ->withCount('information_requests')
+        $organizations = Organization::
+            // with('information_requests')->
+            withCount('information_requests')
             ->get();
-        $controller = new InformationRequestController;    
 
         $arrayOrganizations = $organizations->map(function ($item, $key) use($controller, $request) {
-            // $request2 = $request;
             $informationRequests = $controller->getDataByEntityStatus($request);
-            // $information_request = 
 
             return [
                 'id' => $item->id,
@@ -70,6 +189,7 @@ class DashboardController extends Controller
         });
 
         $data['organizations'] = $arrayOrganizations;
+        // dd( $data['organizations'] );
 
         if(checkAjaxJsonRequest($request))
         {

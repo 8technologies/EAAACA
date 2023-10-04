@@ -11,15 +11,36 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/backend/js').vue()
-    .postCss('resources/css/backend.css', 'public/backend/css', [])
-    .webpackConfig(require('./webpack.config'))
+mix.js('resources/jsFrontend/app.js', 'public/frontend/js').vue()
+    .postCss('resources/css/frontend.css', 'public/frontend/css', [])
+    .webpackConfig( function() {
+        const path = require('path');
+        const { IgnorePlugin } = require('webpack');
+
+        return module.exports = {
+            resolve: {
+                alias: {
+                    '@': path.resolve('resources/js'),
+                    '@frontend': path.resolve('resources/jsFrontend'),
+                },
+            },
+            plugins: [
+                new IgnorePlugin({
+                    resourceRegExp: /ckeditor/,
+                }),
+                new IgnorePlugin({
+                    resourceRegExp: /moment/,
+                    // resourceRegExp: /^\.\/locale$/,
+                    // contextRegExp: /moment$/,
+                }),
+            ],
+        }
+    })
     .autoload({
         jquery: ['$', 'window.jQuery', 'jQuery'],
-        moment: ['moment','window.moment'],   
     })
     .extract()
-    
+
 if (mix.inProduction()) {
     mix.version();
 }
