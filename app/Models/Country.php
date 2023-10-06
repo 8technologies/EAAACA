@@ -9,6 +9,17 @@ class Country extends Model
 {
     use HasFactory;
 
+    //toSelectArray
+    public static function toSelectArray()
+    {
+        $data = [];
+        $countries = self::where([])->orderBy('name', 'asc')->get();
+        foreach ($countries as $country) {
+            $data[$country->id] = $country->name;
+        }
+        return $data;
+    }
+
     //boot function
     protected static function boot()
     {

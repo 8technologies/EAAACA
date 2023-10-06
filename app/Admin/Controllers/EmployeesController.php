@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\AdminRole;
+use App\Models\Company;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin;
@@ -33,18 +34,22 @@ class EmployeesController extends AdminController
         $grid->actions(function ($actions) {
             $actions->disableDelete();
         });
-        $grid->model()
-            ->orderBy('id', 'Desc')
-            ->where([
-                'company_id' => Admin::user()->company_id,
-            ]);
+
+        $u = Admin::user();
+        if (!$u->isRole('admin')) {
+            $grid->model()
+                ->orderBy('id', 'Desc')
+                ->where([
+                    'company_id' => Admin::user()->company_id,
+                ]);
+        }
+
         $grid->actions(function ($actions) {
             //$actions->disableView();
         });
 
 
         $grid->filter(function ($filter) {
-
             $roleModel = config('admin.database.roles_model');
             $filter->equal('main_role_id', 'Filter by role')
                 ->select($roleModel::where('slug', '!=', 'super-admin')
@@ -58,7 +63,7 @@ class EmployeesController extends AdminController
         $grid->disableBatchActions();
         $grid->column('id', __('Id'))->sortable();
         $grid->column('name', __('Name'))->sortable();
-        $grid->column('main_role_id', __('Main role'))
+   /*      $grid->column('main_role_id', __('Main role'))
             ->display(function ($x) {
                 if ($this->main_role == null) {
                     return $x;
@@ -66,7 +71,7 @@ class EmployeesController extends AdminController
                 return $this->main_role->name;
             })
             ->sortable()
-            ->label('success');
+            ->label('success'); */
         $grid->column('roles', 'Roles')->pluck('name')->label()->hide();
         $grid->column('phone_number_1', __('Phone number'));
         $grid->column('phone_number_2', __('Phone number 2'))->hide();
@@ -139,21 +144,20 @@ class EmployeesController extends AdminController
 
 
         $form->divider('BIO DATA');
-
         $u = Admin::user();
-        $form->hidden('company_id')->rules('required')->default($u->company_id)
-            ->value($u->company_id);
         $form->text('first_name')->rules('required');
         $form->text('last_name')->rules('required');
+        $form->select('company_id')->rules('required')
+            ->options(Company::toSelectArray());
         $form->date('date_of_birth');
         $form->text('place_of_birth');
-        $form->radioCard('sex', 'Gender')->options(['Male' => 'Male', 'Female' => 'Female'])->rules('required');
+        $form->radio('sex', 'Gender')->options(['Male' => 'Male', 'Female' => 'Female'])->rules('required');
         $form->text('phone_number_1', 'Mobile phone number')->rules('required');
         $form->text('phone_number_2', 'Home phone number');
 
         $form->divider('PERSONAL INFORMATION');
 
-        $form->radioCard('has_personal_info', 'Does this user have personal information?')
+        $form->radio('has_personal_info', 'Does this user have personal information?')
             ->options([
                 'Yes' => 'Yes',
                 'No' => 'No',
@@ -174,7 +178,6 @@ class EmployeesController extends AdminController
                 $form->text('emergency_person_name', "Emergency person to contact name");
                 $form->text('emergency_person_phone', "Emergency person to contact phone number");
             });
-
 
         $form->divider('EDUCATIONAL INFORMATION');
         $form->radioCard('has_educational_info', 'Does this user have education information?')
@@ -227,7 +230,8 @@ class EmployeesController extends AdminController
             ])
             ->options(
                 $roleModel
-            );
+            )
+            ->rules('required');
 
         $form->divider('SYSTEM ACCOUNT');
         $form->image('avatar', trans('admin.avatar'));

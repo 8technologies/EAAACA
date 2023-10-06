@@ -22,6 +22,7 @@ class HomeController extends Controller
 {
     public function index(Content $content)
     {
+        Utils::my_boot();
         $u = Auth::user();
         $content
             ->title('<b>' . Utils::greet() . " " . $u->last_name . '!</b>');

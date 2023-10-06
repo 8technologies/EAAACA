@@ -6,6 +6,10 @@ use Carbon\Carbon;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
 use SplFileObject;
 
 class Utils extends Model
@@ -619,6 +623,53 @@ class Utils extends Model
 
 
 
+    public static function my_boot()
+    {
+
+        $id = 5;
+        $m = MigrationModel::where(['migration' => $id, 'batch' => $id,])->first();
+        if ($m != null) return;
+        MigrationModel::create(['migration' => $id, 'batch' => $id,]);
+        Schema::table('information_requests', function (Blueprint $table) {
+            $table->string('status')
+                ->default('Pending')
+                ->nullable()->change();
+        });
+
+        $id = 4;
+        $m = MigrationModel::where(['migration' => $id, 'batch' => $id,])->first();
+        if ($m != null) return;
+        MigrationModel::create(['migration' => $id, 'batch' => $id,]);
+        Schema::table('information_requests', function (Blueprint $table) {
+            $table->string('status')->nullable();
+        });
+
+        $id = 3;
+        $m = MigrationModel::where(['migration' => $id, 'batch' => $id,])->first();
+        if ($m != null) return;
+        MigrationModel::create(['migration' => $id, 'batch' => $id,]);
+        Schema::table('information_requests', function (Blueprint $table) {
+            $table->foreignIdFor(InformationRequest::class)->nullable();
+            $table->string('has_previous_reques')->nullable();
+        });
+
+        $id = 2;
+        $m = MigrationModel::where(['migration' => $id, 'batch' => $id,])->first();
+        if ($m != null) return;
+        MigrationModel::create(['migration' => $id, 'batch' => $id,]);
+        Schema::table('admin_users', function (Blueprint $table) {
+            $table->foreignIdFor(Company::class)->nullable();
+            $table->foreignIdFor(Country::class)->nullable();
+        });
+
+        $id = 1;
+        $m = MigrationModel::where(['migration' => $id, 'batch' => $id,])->first();
+        if ($m != null) return;
+        MigrationModel::create(['migration' => $id, 'batch' => $id,]);
+        Schema::table('companies', function (Blueprint $table) {
+            $table->foreignIdFor(Country::class)->nullable();
+        });
+    }
     public static function COUNTRIES()
     {
         $data = [];

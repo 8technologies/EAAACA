@@ -3,6 +3,8 @@
 namespace Encore\Admin\Auth\Database;
 
 use App\Models\Campus;
+use App\Models\Company;
+use App\Models\Country;
 use App\Models\UserHasProgram;
 use Carbon\Carbon;
 use Encore\Admin\Traits\DefaultDatetimeFormat;
@@ -24,6 +26,28 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
     use HasPermissions;
     use DefaultDatetimeFormat;
 
+    //list of this model to array for select
+    public static function toSelectArray()
+    {
+        $data = [];
+        $users = self::where([])->orderBy('first_name', 'asc')->get();
+        foreach ($users as $user) {
+            $country = $user->country;
+            $country_text = "";
+            if ($country != null) {
+                $country_text = " - " . $country->name;
+            }
+            $data[$user->id] = $user->name . $country_text;
+        }
+        return $data;
+    }
+
+    //country
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -33,7 +57,7 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
     {
         return [];
     }
-
+ 
 
     protected $fillable = ['username', 'password', 'name', 'avatar', 'created_at_text'];
 
@@ -58,17 +82,26 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
         parent::boot();
 
         self::creating(function ($m) {
-            $n = $m->first_name . " " . $m->last_name;
-            if (strlen(trim($n)) > 1) {
-                $m->name = trim($n);
-            }
+            return self::prepare($m);
         });
         self::updating(function ($m) {
-            $n = $m->first_name . " " . $m->last_name;
-            if (strlen(trim($n)) > 1) {
-                $m->name = trim($n);
-            } 
+            return self::prepare($m);
         });
+    }
+
+    public static function prepare($m)
+    {
+        $n = $m->first_name . " " . $m->last_name;
+        if (strlen(trim($n)) > 1) {
+            $m->name = trim($n);
+        }
+        $m->username = strtolower($m->username);
+        $m->email = strtolower($m->email);
+        $company = Company::find($m->company_id);
+        if ($company != null) {
+            $m->country_id = $company->country_id;
+        }
+        return $m;
     }
 
 

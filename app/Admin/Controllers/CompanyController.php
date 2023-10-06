@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\AdminRoleUser;
 use App\Models\Company;
+use App\Models\Country;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -101,7 +102,9 @@ class CompanyController extends AdminController
         $form->select('administrator_id', __('Set Organization Administrator'))
             ->options($users)
             ->rules('required');
-
+        $form->select('country_id', __('Member State'))
+            ->options(Country::toSelectArray())
+            ->rules('required');
         $form->text('name', __('Organization Name'))->rules('required');
         $form->text('short_name', __('Organization Short Name'))->rules('required');
         $form->text('details', __('Details'));

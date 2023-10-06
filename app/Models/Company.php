@@ -11,6 +11,17 @@ class Company extends Model
 {
     use HasFactory;
 
+    //toSelectArray
+    public static function toSelectArray()
+    {
+        $data = [];
+        $companies = self::where([])->orderBy('name', 'asc')->get();
+        foreach ($companies as $company) {
+            $data[$company->id] = $company->name;
+        }
+        return $data;
+    }
+
     public static function boot()
     {
         parent::boot();
