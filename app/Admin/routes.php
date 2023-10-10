@@ -24,6 +24,7 @@ Route::group([
     $router->resource('montly-tasks', TaskController::class);
     $router->resource('tasks', TaskController::class);
     $router->resource('events', EventController::class);
+    $router->resource('focal-points', FocalPointsController::class);
     $router->get('/calendar', 'HomeController@calendar')->name('calendar');
 
 

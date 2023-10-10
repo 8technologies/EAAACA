@@ -42,4 +42,10 @@ class Company extends Model
             $owner->save();
         });
     }
+
+    //for administrator
+    public function owner()
+    {
+        return $this->belongsTo(Administrator::class, 'administrator_id');
+    }
 }

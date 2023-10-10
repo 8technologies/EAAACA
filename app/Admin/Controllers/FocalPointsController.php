@@ -14,14 +14,14 @@ use Encore\Admin\Widgets\Tab;
 use Illuminate\Support\Facades\Hash;
 
 
-class EmployeesController extends AdminController
+class FocalPointsController extends AdminController
 {
     /**
      * Title for current resource.
      *
      * @var string
      */
-    protected $title = 'System Users';
+    protected $title = 'Focal Points';
 
     /**
      * Make a grid builder.
@@ -31,21 +31,19 @@ class EmployeesController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Administrator());
-        $grid->disableBatchActions();
-        $grid->disableExport();
-        $grid->actions(function ($actions) {
-            $actions->disableDelete();
-        });
-
         $u = Admin::user();
         if (!$u->isRole('admin')) {
             $grid->model()
                 ->orderBy('id', 'Desc')
                 ->where([
-                    'company_id' => Admin::user()->company_id,
                 ]);
         }
 
+        $grid->disableActions();
+        $grid->disableCreateButton();
+        $grid->disableExport();
+        $grid->disableBatchActions();
+        
         $grid->actions(function ($actions) {
             //$actions->disableView();
         });

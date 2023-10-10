@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,6 +11,21 @@ class CaseModel extends Model
     use HasFactory;
 
 
+    //boot
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($m) {
+            $u = Administrator::find($m->administrator_id);
+            if ($u == null) {
+                throw new \Exception("Owner not found");
+            }
+            $m->country_id = $u->country_id; 
+            return $m;
+        });
+        static::updating(function ($m) {
+        });
+    }
 
     //cases to array for select dropdown
     public static function casesToArray()
@@ -37,5 +53,17 @@ class CaseModel extends Model
     public function findings()
     {
         return $this->hasMany(CaseModelFinding::class);
+    }
+
+    //owner
+    public function owner()
+    {
+        return $this->belongsTo(Administrator::class, 'administrator_id');
+    }
+
+    //country
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id');
     }
 }

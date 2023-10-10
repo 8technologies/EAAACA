@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\InformationRequest;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
@@ -29,14 +30,24 @@ class HomeController extends Controller
         $u = Admin::user();
 
 
-
         $content->row(function (Row $row) {
             $row->column(6, function (Column $column) {
                 $u = Admin::user();
+                $conditions_pending = [
+                    'status' => 'Pending',
+                ];
+                $conditions_waiting = [
+                    'status' => 'Waiting for response',
+                ];
+                if (!$u->isRole('admin')) {
+                    $conditions_pending['receiver_id'] = $u->id;
+                    $conditions_waiting['receiver_id'] = $u->id;
+                }
                 $column->append(view('widgets.dashboard-segment-1', [
-                    'events' => Event::where([
-                        'company_id' => $u->company_id,
-                    ])->where('event_date', '>=', Carbon::now()->format('Y-m-d'))->orderBy('id', 'desc')->limit(8)->get()
+                    'title' => 'Pending Requests',
+                    'pending_requests' => InformationRequest::where($conditions_pending)->get(),
+                    'waiting_requests' => InformationRequest::where($conditions_waiting)->get(),
+                    'events' => Event::where([])->where('event_date', '>=', Carbon::now()->format('Y-m-d'))->orderBy('id', 'desc')->get()
                 ]));
             });
             $row->column(6, function (Column $column) {

@@ -61,7 +61,7 @@ class ApiAuthController extends Controller
 
         $r->username = trim($r->username);
 
-        $u = User::where('phone_number', $r->username)
+        $u = User::where('phone_number_1', $r->username)
             ->orWhere('username', $r->username)
             ->orWhere('id', $r->username)
             ->orWhere('email', $r->username)
@@ -74,9 +74,9 @@ class ApiAuthController extends Controller
             $phone_number = Utils::prepare_phone_number($r->username);
 
             if (Utils::phone_number_is_valid($phone_number)) {
-                $phone_number = $r->phone_number;
+                $phone_number = $r->phone_number_1;
 
-                $u = User::where('phone_number', $phone_number)
+                $u = User::where('phone_number_1', $phone_number)
                     ->orWhere('username', $phone_number)
                     ->orWhere('email', $phone_number)
                     ->first();
@@ -111,11 +111,11 @@ class ApiAuthController extends Controller
 
     public function register(Request $r)
     {
-        if ($r->phone_number == null) {
+        if ($r->phone_number_1 == null) {
             return $this->error('Phone number is required.');
         }
 
-        $phone_number = Utils::prepare_phone_number(trim($r->phone_number));
+        $phone_number = Utils::prepare_phone_number(trim($r->phone_number_1));
 
 
         if (!Utils::phone_number_is_valid($phone_number)) {
@@ -134,7 +134,7 @@ class ApiAuthController extends Controller
 
 
 
-        $u = Administrator::where('phone_number', $phone_number)
+        $u = Administrator::where('phone_number_1', $phone_number)
             ->orWhere('username', $phone_number)->first();
         if ($u != null) {
             return $this->error('User with same phone number already exists.');
@@ -156,7 +156,7 @@ class ApiAuthController extends Controller
             $user->first_name = $name;
         }
 
-        $user->phone_number = $phone_number;
+        $user->phone_number_1 = $phone_number;
         $user->username = $phone_number;
         $user->reg_number = $phone_number;
         $user->country = $phone_number;

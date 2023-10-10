@@ -27,6 +27,7 @@ class InformationRequest extends Model
     {
         parent::boot();
         static::creating(function ($m) {
+            $m->status = 'Pending';
             return self::prepare($m);
         });
         static::updating(function ($m) {
@@ -91,5 +92,11 @@ class InformationRequest extends Model
     public function review_by()
     {
         return $this->belongsTo(Administrator::class, 'review_by_id');
+    }
+
+    //has manay InformationRequestReponse
+    public function information_request_reponses()
+    {
+        return $this->hasMany(InformationRequestReponse::class, 'information_request_id');
     }
 }

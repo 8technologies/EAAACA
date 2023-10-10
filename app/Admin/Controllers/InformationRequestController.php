@@ -43,12 +43,10 @@ class InformationRequestController extends AdminController
         }
         $grid->model()->OrderBy('id', 'Desc');
         $grid->column('id', __('ID'))->sortable();
-        /* $grid->column('organization_id', __('Organization'))
-            ->display(function ($organization_id) {
-                if ($this->organization == null)
-                    return '-';
-                return $this->organization->name;
-            })->sortable(); */
+        $grid->column('created_at', __('Created'))
+            ->display(function ($created_at) {
+                return date('d-m-Y', strtotime($created_at));
+            })->sortable();
 
         $grid->column('sender_id', __('Sender'))
             ->display(function ($sender_country_id) {
@@ -93,7 +91,7 @@ class InformationRequestController extends AdminController
         return $grid;
     }
 
-    /**
+    /** 
      * Make a show builder.
      *
      * @param mixed $id
@@ -143,42 +141,149 @@ class InformationRequestController extends AdminController
         $form = new Form(new InformationRequest());
 
         $u = Admin::user();
-        $form->hidden('sender_id', __('Sender'))->default($u->id);
+        if ($form->isCreating()) {
+            $form->hidden('status', __('Status'))->default('Pending');
+            $form->hidden('sender_id', __('Sender'))->default($u->id);
+            $recs = Administrator::toSelectArray();
+            unset($recs[$u->id]);
+            $form->select('receiver_id', __('Receiver Focal Point'))
+                ->options($recs)
+                ->rules('required');
+            $form->text('request_reference_no', __('Reference number of this request'))->rules('required');
+            $form->radioCard('has_previous_reques', 'Has this request been made before?')
+                ->options(['Yes' => 'Yes', 'No' => 'No'])
+                ->when('Yes', function ($form) {
+                    $form->select('information_request_id', __('Select Previous Request'))
+                        ->options(InformationRequest::toSelectArray())
+                        ->rules('required');
+                })->rules('required');
+            $form->textarea('description_of_circumstances', __('Description of the circumstances in which the offence(s) was (were) committed, including the time, place an degree of participation in the offence(s) by the person who is the subject of the request for information or intelligence.'))
+                ->help('Enter description of the circumstances in which the offence(s) was (were) committed here')
+                ->rules('required');
+
+            $form->checkbox('type_of_crimes_investigated', __('Crimes to investigate'))
+                ->options(Offence::list())
+                ->stacked()
+                ->rules('required');
+            $form->textarea('purpose_for_information_request', __('Identity(ies) (as far as known) of the person(s) being the main subject(s) of the criminal investigation or criminal intelligence operation underlying the request for information or intelligence'))->rules('required');
+            $form->textarea('connection_btw_information_request', __("Connection between the purpose for which the information or intelligence is requested and the person who is the subject fo the information or intelligence."))->rules('required');
+            $form->textarea('identity_of_the_persons', __('Reasons for believing that the information or intelligence is in the requested Member State'))->rules('required');
+            $form->radio('reasons_tobe_in_member_state', __('Restrictions of the use of information contained in this request for purposes other than those for which it has been supplied of preventing an immediate and serious threat to public security.'))
+                ->options([
+                    'Use granted' => 'Use granted',
+                    'Use granted, but do not mention the information provider' => 'Use granted, but do not mention the information provider',
+                    'Do not use without authorisation of the information provider' => 'Do not use without authorisation of the information provider',
+                    'Do not use' => 'Do not use'
+                ])
+                ->stacked()
+                ->rules('required');
+        } else {
+            $form->divider("Request Information");
+            $form->display('sender_id', __('Sender'))
+                ->with(function ($sender_id) {
+                    $sender = Administrator::find($sender_id);
+                    if ($sender == null) {
+                        return '-';
+                    }
+                    return $sender->name;
+                });
+            $recs = Administrator::toSelectArray();
+            $form->display('receiver_id', __('Receiver Focal Point'))
+                ->with(function ($receiver_id) {
+                    $receiver = Administrator::find($receiver_id);
+                    if ($receiver == null) {
+                        return '-';
+                    }
+                    return $receiver->name;
+                });
+            $form->text('request_reference_no', __('Reference number of this request'))
+                ->disable();
+            $form->radio('has_previous_reques', 'Has this request been made before?')
+                ->options(['Yes' => 'Yes', 'No' => 'No'])
+                ->when('Yes', function ($form) {
+                    $form->select('information_request_id', __('Select Previous Request'))
+                        ->options(InformationRequest::toSelectArray());
+                })
+                ->disable();
+            $form->textarea('description_of_circumstances', __('Description of the circumstances in which the offence(s) was (were) committed, including the time, place an degree of participation in the offence(s) by the person who is the subject of the request for information or intelligence.'))
+                ->help('Enter description of the circumstances in which the offence(s) was (were) committed here')
+                ->disable();
+
+            $form->checkbox('type_of_crimes_investigated', __('Crimes to investigate'))
+                ->options(Offence::list())
+                ->stacked()
+                ->disable();
+            $form->textarea('purpose_for_information_request', __('Identity(ies) (as far as known) of the person(s) being the main subject(s) of the criminal investigation or criminal intelligence operation underlying the request for information or intelligence'))
+                ->disable();
+            $form->textarea('connection_btw_information_request', __("Connection between the purpose for which the information or intelligence is requested and the person who is the subject fo the information or intelligence."))
+                ->disable();
+            $form->textarea('identity_of_the_persons', __('Reasons for believing that the information or intelligence is in the requested Member State'))
+                ->disable();
+            $form->radio('reasons_tobe_in_member_state', __('Restrictions of the use of information contained in this request for purposes other than those for which it has been supplied of preventing an immediate and serious threat to public security.'))
+                ->options([
+                    'Use granted' => 'Use granted',
+                    'Use granted, but do not mention the information provider' => 'Use granted, but do not mention the information provider',
+                    'Do not use without authorisation of the information provider' => 'Do not use without authorisation of the information provider',
+                    'Do not use' => 'Do not use'
+                ])
+                ->stacked()->disable();
+            $form->divider("Request Response");
 
 
-        $form->select('receiver_id', __('Receiver Focal Point'))
-            ->options(Administrator::toSelectArray())
-            ->rules('required');
+            //get current url segments
+            $segment = InformationRequest::where([
+                'id' => request()->segments()[1]
+            ])->first();
+            $u = Admin::user();
 
-        $form->text('request_reference_no', __('Reference number of this request'))->rules('required');
-        $form->radioCard('has_previous_reques', 'Has this request been made before?')
-            ->options(['Yes' => 'Yes', 'No' => 'No'])
-            ->when('Yes', function ($form) {
-                $form->select('information_request_id', __('Select Previous Request'))
-                    ->options(InformationRequest::toSelectArray())
+            if ($u->id == $segment->receiver_id) {
+                $form->radioCard('status', __('Mark Request Status As'))
+                    ->options([
+                        'Pending' => 'Pending',
+                        'Waiting for response' => 'Received & Waiting for response',
+                        'Halted' => 'Halted',
+                        'Completed' => 'Completed',
+                    ])
                     ->rules('required');
-            })->rules('required');
-        $form->textarea('description_of_circumstances', __('Description of the circumstances in which the offence(s) was (were) committed, including the time, place an degree of participation in the offence(s) by the person who is the subject of the request for information or intelligence.'))
-            ->help('Enter description of the circumstances in which the offence(s) was (were) committed here')
-            ->rules('required');
 
-        $form->checkbox('type_of_crimes_investigated', __('Crimes to investigate'))
-            ->options(Offence::list())
-            ->rules('required');
-        $form->textarea('purpose_for_information_request', __('Identity(ies) (as far as known) of the person(s) being the main subject(s) of the criminal investigation or criminal intelligence operation underlying the request for information or intelligence'))->rules('required');
-        $form->textarea('connection_btw_information_request', __("Connection between the purpose for which the information or intelligence is requested and the person who is the subject fo the information or intelligence."))->rules('required');
-        $form->textarea('identity_of_the_persons', __('Reasons for believing that the information or intelligence is in the requested Member State'))->rules('required');
-        $form->radio('reasons_tobe_in_member_state', __('Restrictions of the use of information contained in this request for purposes other than those for which it has been supplied of preventing an immediate and serious threat to public security.'))
-            ->options([
-                'Use granted' => 'Use granted',
-                'Use granted, but do not mention the information provider' => 'Use granted, but do not mention the information provider',
-                'Do not use without authorisation of the information provider' => 'Do not use without authorisation of the information provider',
-                'Do not use' => 'Do not use'
-            ])
-            ->stacked()
-            ->rules('required');
+                $form->quill('gen_response', __('Generate Response'))
+                    ->help('Enter response here');
+
+                //has manay information_request_reponses
+                $form->hasMany('information_request_reponses', 'Reponse Attachments', function (Form\NestedForm $form) {
+                    $form->text('description', __('Description'))->rules('required');
+                    $form->file('file', __('Attachment'));
+                });
+            } else {
+                $form->disableViewCheck();
+                $form->disableSubmit();
+                $form->select('status', __('Request Status'))
+                    ->options([
+                        'Pending' => 'Pending',
+                        'Waiting for response' => 'Waiting for response',
+                        'Halted' => 'Halted',
+                        'Completed' => 'Completed',
+                    ])
+                    ->disable();
+                $form->hasMany('information_request_reponses', 'Request Responses', function (Form\NestedForm $form) {
+                    $form->display('description', __('Description'))->disable();
+                    $form->file('file', __('Attachment'))
+                        ->downloadable()
+                        ->disable();
+                })->disableCreate()
+                    ->disableDelete();
+            }
+        }
 
 
+
+        $form->disableCreatingCheck();
+        $form->disableViewCheck();
+        $form->disableReset();
+        $form->tools(function (Form\Tools $tools) {
+            $tools->disableDelete();
+            $tools->disableView();
+        });
         return $form;
     }
 }

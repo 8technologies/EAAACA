@@ -1,14 +1,12 @@
-@foreach($css as $c)
+@foreach ($css as $c)
     <link rel="stylesheet" href="{{ admin_asset("$c") }}">
 @endforeach
 
 <?php
 
-$primt_color = '#23A454';
-?><style> 
-    .sidebar {
-        background-color: #FFFFFF;
-    }
+$primt_color = '#1d55c4';
+?><style>
+
 
     .content-header {
         background-color: #F9F9F9;
@@ -45,7 +43,8 @@ $primt_color = '#23A454';
     :root {
         --primary: {{ $primt_color }};
     }
+
     .card {
         box-shadow: rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
     }
-</style> 
+</style>

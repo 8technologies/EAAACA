@@ -18,7 +18,8 @@ class Dashboard
     {
         $events = Utils::prepare_calendar_events(Auth::user());
         return view('dashboard.calender', [
-            'events' => $events
+            'events' => $events,
+            'display_notice_board' => true
         ]);
     }
 

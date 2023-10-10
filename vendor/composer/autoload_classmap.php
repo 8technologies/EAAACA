@@ -85,6 +85,8 @@ return array(
     'App\\Models\\FinancialYear' => $baseDir . '/app/Models/FinancialYear.php',
     'App\\Models\\Gen' => $baseDir . '/app/Models/Gen.php',
     'App\\Models\\InformationRequest' => $baseDir . '/app/Models/InformationRequest.php',
+    'App\\Models\\InformationRequestReponse' => $baseDir . '/app/Models/InformationRequestReponse.php',
+    'App\\Models\\MigrationModel' => $baseDir . '/app/Models/MigrationModel.php',
     'App\\Models\\NewsPost' => $baseDir . '/app/Models/NewsPost.php',
     'App\\Models\\NewsPostCategory' => $baseDir . '/app/Models/NewsPostCategory.php',
     'App\\Models\\Offence' => $baseDir . '/app/Models/Offence.php',

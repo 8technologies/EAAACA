@@ -30,17 +30,27 @@ class CompanyController extends AdminController
         $grid->disableBatchActions();
         $grid->quickSearch('name')->placeholder('Search by name');
         $grid->column('id', __('Id'))->sortable();
+        $grid->column('logo', __('Logo'))
+            ->lightbox(['width' => 60, 'height' => 60])
+            ->sortable();
         $grid->column('created_at', __('Created'))
             ->hide()
             ->sortable();
+
         $grid->column('name', __('Organization Name'))->sortable();
         $grid->column('short_name', __('Short name'))->hide();
-        //$grid->column('logo', __('Logo'));
         $grid->column('phone_number', __('Phone number'))->sortable();
         $grid->column('phone_number_2', __('Phone number 2'))->hide();
         $grid->column('email', __('Email'));
         $grid->column('website', __('Website'));
-        $grid->column('subdomain', __('Subdomain'));
+        $grid->column('administrator_id', 'Admin')
+            ->display(function ($administrator_id) {
+                if ($this->owner == null) {
+                    return '-';
+                }
+                return $this->owner->name;
+            })->sortable();
+        $grid->column('subdomain', __('Subdomain'))->hide();
         $grid->column('address', __('Address'));
 
 
@@ -93,10 +103,7 @@ class CompanyController extends AdminController
     {
         $form = new Form(new Company());
         $users = [];
-        foreach (AdminRoleUser::where(['role_id' => 2])->get() as $key => $role) {
-            if ($role->user == null) {
-                continue;
-            }
+        foreach (AdminRoleUser::where([])->get() as $key => $role) {
             $users[$role->user->id] = $role->user->name;
         }
         $form->select('administrator_id', __('Set Organization Administrator'))

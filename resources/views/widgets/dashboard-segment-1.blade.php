@@ -8,6 +8,15 @@ if (!isset($project_count)) {
 if (!isset($tasks_count)) {
     $tasks_count = 0;
 }
+if (!isset($pending_requests)) {
+    $pending_requests = [];
+}
+if (!isset($waiting_requests)) {
+    $waiting_requests = [];
+}
+if (!isset($title)) {
+    $title = 'Pending Requests';
+}
 ?>
 <div class="row">
     <div class="col-12">
@@ -15,27 +24,27 @@ if (!isset($tasks_count)) {
             <div class="col-md-4">
                 @include('widgets.box-6', [
                     'is_dark' => false,
-                    'title' => 'Ongoing Projects',
+                    'title' => 'Pending Requests',
                     'icon' => 'box',
-                    'number' => $project_count,
+                    'number' => count($pending_requests),
                     'link' => 'javascript:;',
                 ])
             </div>
             <div class="col-md-4">
                 @include('widgets.box-6', [
                     'is_dark' => false,
-                    'title' => 'This Week\'s Tasks',
+                    'title' => 'Waiting Requests',
                     'icon' => 'list-task',
-                    'number' => $tasks_count,
+                    'number' => count($waiting_requests),
                     'link' => 'javascript:;',
                 ])
             </div>
             <div class="col-md-4">
                 @include('widgets.box-6', [
                     'is_dark' => false,
-                    'title' => 'This Week\'s Events',
+                    'title' => 'Upcoming Events',
                     'icon' => 'calendar-event-fill',
-                    'number' => $events_count,
+                    'number' => count($events),
                     'link' => 'javascript:;',
                 ])
             </div>
@@ -45,12 +54,12 @@ if (!isset($tasks_count)) {
 <div class="row">
     <div class="col-md-6">
         @include('dashboard.upcoming-events', [
-            'items' => $events,
+            'items' => $events->take(8),
         ])
     </div>
     <div class="col-md-6">
         @include('dashboard.tasks', [
-            'items' => $events,
+            'items' => $events->take(8),
         ])
     </div>
 </div>

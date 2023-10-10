@@ -15,4 +15,9 @@ class NewsPost extends Model
     {
         return $this->belongsTo(Administrator::class, 'administrator_id');
     }
+    //category 
+    public function category()
+    {
+        return $this->belongsTo(NewsPostCategory::class, 'news_post_category_id');
+    } 
 }

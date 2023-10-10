@@ -25,19 +25,32 @@ class NewsPostController extends AdminController
      */
     protected function grid()
     {
+
         $grid = new Grid(new NewsPost());
         $grid->disableBatchActions();
         $grid->model()->orderBy('id', 'desc');
 
-        $grid->column('created_at', __('Date'));
-        $grid->column('administrator_id', __('Administrator'))
+        $grid->column('photo', __('Photo'))->lightbox(['width' => 60, 'height' => 60]);
+        $grid->column('created_at', __('Date'))
+            ->display(function ($created_at) {
+                return date('d-m-Y', strtotime($created_at));
+            })->sortable();
+        $grid->column('administrator_id', __('Posted By'))
             ->display(function ($administrator_id) {
+                if ($this->administrator == null) {
+                    return '-';
+                }
                 return $this->administrator->name;
-            });
-        $grid->column('news_post_category_id', __('News post category id'));
-        $grid->column('title', __('Title'));
-        $grid->column('details', __('Details'));
-        $grid->column('photo', __('Photo'));
+            })->sortable();
+        $grid->column('news_post_category_id', __('News Post Category'))
+            ->display(function ($administrator_id) {
+                if ($this->category == null) {
+                    return '-';
+                }
+                return $this->category->name;
+            })->sortable();
+
+
 
         return $grid;
     }

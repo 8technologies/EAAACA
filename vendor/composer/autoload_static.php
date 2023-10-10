@@ -659,6 +659,8 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Models\\FinancialYear' => __DIR__ . '/../..' . '/app/Models/FinancialYear.php',
         'App\\Models\\Gen' => __DIR__ . '/../..' . '/app/Models/Gen.php',
         'App\\Models\\InformationRequest' => __DIR__ . '/../..' . '/app/Models/InformationRequest.php',
+        'App\\Models\\InformationRequestReponse' => __DIR__ . '/../..' . '/app/Models/InformationRequestReponse.php',
+        'App\\Models\\MigrationModel' => __DIR__ . '/../..' . '/app/Models/MigrationModel.php',
         'App\\Models\\NewsPost' => __DIR__ . '/../..' . '/app/Models/NewsPost.php',
         'App\\Models\\NewsPostCategory' => __DIR__ . '/../..' . '/app/Models/NewsPostCategory.php',
         'App\\Models\\Offence' => __DIR__ . '/../..' . '/app/Models/Offence.php',
