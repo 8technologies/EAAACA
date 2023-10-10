@@ -246,7 +246,7 @@ class InformationRequestController extends AdminController
                     ])
                     ->rules('required');
 
-                $form->quill('gen_response', __('Generate Response'))
+                $form->quill('gen_response', __('General Response'))
                     ->help('Enter response here');
 
                 //has manay information_request_reponses

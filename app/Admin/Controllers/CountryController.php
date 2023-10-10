@@ -33,6 +33,10 @@ class CountryController extends AdminController
         $grid->column('flag', __('Flag'))->lightbox(['width' => 60, 'height' => 60])
             ->sortable();
         $grid->column('name', __('Name'))->sortable();
+        $grid->column('cases', __('Cases'))
+            ->display(function ($cases) {
+                return count($cases);
+            });
         $grid->column('details', __('Details'));
 
         return $grid;

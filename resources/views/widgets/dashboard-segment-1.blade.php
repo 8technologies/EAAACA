@@ -33,7 +33,7 @@ if (!isset($title)) {
             <div class="col-md-4">
                 @include('widgets.box-6', [
                     'is_dark' => false,
-                    'title' => 'Waiting Requests',
+                    'title' => 'Waiting Response',
                     'icon' => 'list-task',
                     'number' => count($waiting_requests),
                     'link' => 'javascript:;',
