@@ -3,7 +3,9 @@
 namespace App\Admin\Controllers;
 
 use App\Models\InformationRequest;
+use App\Models\Notification;
 use App\Models\Offence;
+use App\Models\Utils;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin;
@@ -27,6 +29,15 @@ class InformationRequestController extends AdminController
      */
     protected function grid()
     {
+
+        // $not = Notification::find(1);
+        // $not->send_mail();
+        // die('done sending mail');
+        // Utils::mail_sender();
+        // die("done sending mail");
+        // /* $m = InformationRequest::find(17);
+        // $m->sendCreatedNotification();
+        // die(); */
         $grid = new Grid(new InformationRequest());
         $grid->disableBatchActions();
         $conds = [];
@@ -139,6 +150,24 @@ class InformationRequestController extends AdminController
     protected function form()
     {
         $form = new Form(new InformationRequest());
+
+        if ($form->isEditing()) {
+            $id = request()->segments()[1];
+            $model = InformationRequest::find($id);
+            if ($model != null) {
+                $u = Admin::user();
+                $notifications = Notification::where([
+                    'model' => 'InformationRequest',
+                    'model_id' => $model->id,
+                    'receiver_id' => $u->id
+                ])->get();
+                foreach ($notifications as $notification) {
+                    $notification->status = 'Read';
+                    $notification->save();
+                }
+            }
+        }
+
 
         $u = Admin::user();
         if ($form->isCreating()) {

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 
 use SplFileObject;
@@ -15,6 +16,38 @@ use SplFileObject;
 class Utils extends Model
 {
     use HasFactory;
+
+    public static function get_user_notifications($u)
+    {
+        return Notification::where([
+            'receiver_id' => $u->id,
+            'status' => 'Unread'
+        ])->get();
+    }
+    //function to check if email address is valid
+    public static function is_valid_email($email)
+    {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return true;
+        }
+        return false;
+    }
+
+
+    //mail sender
+    public static function mail_sender($data)
+    {
+        try {
+            Mail::send('mail', ['body' => $data['body'], 'title' => $data['subject']], function ($m) use ($data) {
+                $m->to($data['email'], $data['name'])
+                    ->subject($data['subject']);
+                $m->from('noreply@8technologies.cloud', '8Technologies');
+            });
+        } catch (\Throwable $th) {
+            $msg = 'failed';
+            throw $th;
+        }
+    }
 
     //static php fuction that greets the user according to the time of the day
     public static function greet()
@@ -507,6 +540,10 @@ class Utils extends Model
     public static function system_boot()
     {
 
+        //send unsent notifications
+        foreach (Notification::where(['is_sent' => 'No'])->get() as $key => $notification) {
+            $notification->send_mail();
+        }
 
         //Companies with no financial years
         foreach (Company::where([

@@ -33,6 +33,37 @@ class InformationRequest extends Model
         static::updating(function ($m) {
             return self::prepare($m);
         });
+        //creatd
+        static::created(function ($m) {
+            $m->sendCreatedNotification();
+        });
+    }
+
+    //send created notification 
+    public function sendCreatedNotification()
+    {
+
+        if ($this->is_sent != 'No') {
+            return;
+        }
+
+        $sender = Administrator::find($this->sender_id);
+        if ($sender == null) {
+            throw new \Exception("Sender not found");
+        }
+        $receiver = Administrator::find($this->receiver_id);
+        if ($receiver == null) {
+            throw new \Exception("Receiver not found");
+        }
+        $notification = new Notification();
+        $notification->receiver_id = $receiver->id;
+        $notification->model_id = $this->id;
+        $notification->model = 'InformationRequest';
+        $notification->controller = 'Information Request #' . $this->id . ' has been created.';
+        $notification->url = admin_url('information-requests/' . $this->id . "/edit");
+        $notification->body = 'Dear ' . $receiver->name . ', <br> <br> ' . $sender->name . ' has created Information Request #' . $this->id . ' on ' . $this->created_at . '. <br> <br> Please login to the system to view the details. <br> <br> ';
+        $notification->body .= '<b><a href="' . $notification->url . '">Reiview Request</a><br><br>' . 'Regards, <br> <br> ' . $sender->name;
+        $notification->save();
     }
 
 

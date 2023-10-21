@@ -34,8 +34,9 @@ Admin::css('/css/jquery-confirm.min.css');
 Admin::js('/assets/js/jquery-confirm.min.js');
 Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
 
-    /*     $u = Auth::user();
-    $navbar->left(view('admin.search-bar', [
+    $u = Auth::user();
+    
+    /*     $navbar->left(view('admin.search-bar', [
         'u' => $u
     ]));
 
@@ -54,9 +55,11 @@ Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
         'Counselling Centre' => 'counselling-centres/create',
     ], 'fa-wpforms')->title('Register new'));
 
-    $navbar->left(new Dropdown());
+    $navbar->left(new Dropdown()); */
+    $data['notifications'] = Utils::get_user_notifications($u); 
+    $navbar->right(view('nav-bar-notification',$data));
 
-    $navbar->right(Shortcut::make([
+ /*    $navbar->right(Shortcut::make([
         'How to update your profile' => '',
         'How to register a new person with disability' => '',
         'How to register as service provider' => '',

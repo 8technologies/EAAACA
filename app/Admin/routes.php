@@ -26,6 +26,7 @@ Route::group([
     $router->resource('events', EventController::class);
     $router->resource('focal-points', FocalPointsController::class);
     $router->get('/calendar', 'HomeController@calendar')->name('calendar');
+    $router->resource('notifications', NotificationController::class); 
 
 
     $router->resource('cases', CaseModelController::class);
