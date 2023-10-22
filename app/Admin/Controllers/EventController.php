@@ -31,6 +31,15 @@ class EventController extends AdminController
         $conditions = [];
         $u = auth()->user();
 
+        $grid->disableBatchActions();
+        if ($u->isRole('guest')) {
+            $grid->model()
+                ->orderBy('id', 'Desc')
+                ->where([]);
+            $grid->disableExport();
+            $grid->disableCreateButton();
+            $grid->disableFilter();
+        }
 
         $grid->filter(function ($filter) {
             // Remove the default id filter
@@ -60,7 +69,11 @@ class EventController extends AdminController
             ->sortable();
         $grid->column('administrator_id', __('User'))
             ->display(function ($t) {
-                return Administrator::find($t)->name;
+                $owner = Administrator::find($t);
+                if ($owner == null) {
+                    return '-';
+                }
+                return $owner->name;
             })
             ->sortable();
 

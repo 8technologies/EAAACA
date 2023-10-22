@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -37,6 +38,11 @@ class Country extends Model
         });
     }
 
+    //relationship for administrator
+    public function administrator()
+    {
+        return $this->belongsTo(Administrator::class, 'administrator_id');
+    }
 
     //relationship for case_modes 
     public function cases()

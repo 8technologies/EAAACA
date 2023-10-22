@@ -25,6 +25,14 @@ class Company extends Model
     public static function boot()
     {
         parent::boot();
+
+        //deleting
+        static::deleting(function ($m) {
+            //you cannot delete this item
+            throw new \Exception("You cannot delete this item");
+            return false;
+        });
+
         static::created(function ($m) {
             $owner = Administrator::find($m->administrator_id);
             if ($owner == null) {

@@ -13,10 +13,10 @@ $primt_color = '#1d55c4';
     }
 
     .sidebar-menu .active {
-        border-left: solid 5px {{ $primt_color }} !important;
+/*         border-left: solid 5px {{ $primt_color }} !important;
         ;
         color: {{ $primt_color }} !important;
-        ;
+        ; */
     }
 
 

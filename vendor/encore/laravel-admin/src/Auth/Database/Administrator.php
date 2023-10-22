@@ -87,6 +87,11 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
         self::updating(function ($m) {
             return self::prepare($m);
         });
+        //deleting
+        self::deleting(function ($m) {
+            $m->roles()->detach();
+            $m->permissions()->detach();
+        });
     }
 
     public static function prepare($m)

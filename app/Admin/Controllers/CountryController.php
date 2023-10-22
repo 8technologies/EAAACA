@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Country;
+use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -34,6 +35,15 @@ class CountryController extends AdminController
         $grid->column('flag', __('Flag'))->lightbox(['width' => 60, 'height' => 60])
             ->sortable();
         $grid->column('name', __('Name'))->sortable();
+        $grid->column('administrator_id', __('Contact Person'))
+            ->display(function ($administrator_id) {
+                if ($this->administrator == null) {
+                    return '-';
+                }
+                return $this->administrator->name;
+            }) 
+            ->sortable();
+
         $grid->column('cases', __('Cases'))
             ->display(function ($cases) {
                 return count($cases);
@@ -73,9 +83,28 @@ class CountryController extends AdminController
         $form = new Form(new Country());
 
         $form->text('name', __('Name'))->rules('required');
+
+        $ajax_url = url(
+            '/api/ajax?'
+                . "search_by_1=name"
+                . "&search_by_2=id"
+                . "&model=User"
+        );
+        $form->select('administrator_id', "Contact person")
+            ->options(function ($id) {
+                $a = Administrator::find($id);
+                if ($a) {
+                    return [$a->id => "#" . $a->id . " - " . $a->name];
+                }
+            })
+            ->ajax($ajax_url)->rules('required');
+
         $form->image('flag', __('Flag'));
         $form->textarea('details', __('Details'));
 
+
+
+        $form->disableReset();
         return $form;
     }
 }

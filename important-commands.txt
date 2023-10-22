@@ -6,6 +6,6 @@ php artisan make:migration add_to_some_cols_modinformation_requests --table=info
  
 php artisan admin:make NotificationController --model=App\\Models\\Notification
 
-php artisan make:model Notification -m
+php artisan make:model DiscussionBoardPostComment -m
 php artisan make:model InformationRequestReponse -m
 news_post_category_id
