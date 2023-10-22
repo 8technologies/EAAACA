@@ -40,7 +40,7 @@ class NewsPostController extends AdminController
         }
 
 
-        $grid->quickSearch('title');
+        $grid->quickSearch('title')->placeholder('Search...');
         $grid->disableBatchActions();
         $grid->model()->orderBy('id', 'desc');
 
