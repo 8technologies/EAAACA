@@ -17,6 +17,10 @@ class MainController extends BaseController
 {
   use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+  public function register()
+  {
+    return view('register');
+  }
 
   public function index()
   {

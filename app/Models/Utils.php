@@ -19,6 +19,9 @@ class Utils extends Model
 
     public static function get_user_notifications($u)
     {
+        if ($u == null) {
+            return;
+        }
         return Notification::where([
             'receiver_id' => $u->id,
             'status' => 'Unread'
@@ -66,6 +69,9 @@ class Utils extends Model
 
     public static function prepare_calendar_events($u)
     {
+        if ($u == null) {
+            return;
+        }
 
 
 
@@ -539,6 +545,17 @@ class Utils extends Model
 
     public static function system_boot()
     {
+
+        $u = Admin::user();
+        if ($u != null) {
+            if ($u->roles->count() < 1) {
+                $role = new AdminRoleUser();
+                $role->role_id = 4;
+                $role->user_id = $u->id;
+                $role->save();
+            }
+        }
+
 
         //send unsent notifications
         foreach (Notification::where(['is_sent' => 'No'])->get() as $key => $notification) {

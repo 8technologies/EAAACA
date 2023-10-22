@@ -10,6 +10,7 @@ use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Support\Facades\Auth;
 use PHPUnit\Framework\Constraint\Count;
 
 class CaseModelController extends AdminController
@@ -31,14 +32,23 @@ class CaseModelController extends AdminController
         $grid = new Grid(new CaseModel());
         $u = Admin::user();
         $grid->disableBatchActions();
-        if (!$u->isRole('admin')) {
+        if ($u->isRole('guest')) {
             $grid->model()
                 ->orderBy('id', 'Desc')
                 ->where([
-                    'country_id' => $u->country_id,
+                    'administrator_id' => $u->id,
                 ]);
+            $grid->disableExport();
+            $grid->disableFilter();
+        } else {
+            if (!$u->isRole('admin')) {
+                $grid->model()
+                    ->orderBy('id', 'Desc')
+                    ->where([
+                        'country_id' => $u->country_id,
+                    ]);
+            }
         }
-
         $grid->column('id', __('Id'))->sortable();
         $grid->column('title', __('Title'))->sortable();
         $grid->column('created_at', __('Created'))
@@ -100,7 +110,6 @@ class CaseModelController extends AdminController
                 $actions->disableDelete();
             }
         });
-
         return $grid;
     }
 
@@ -134,52 +143,71 @@ class CaseModelController extends AdminController
     protected function form()
     {
         $form = new Form(new CaseModel());
+        $u = Auth::user();
 
-        $form->tab('Case Basic Information', function ($form) {
-            $u = Admin::user();
-            if ($form->isCreating()) {
-                $form->hidden('administrator_id')->default($u->id);
-
-
-
-                $form->text('title', __('Case Title'))->rules('required');
-                $form->radioCard('status', __('Case Status'))
-                    ->options([
-                        'Investigation'   => 'Under Investigation',
-                        'Closed' => 'Closed',
-                    ])->rules('required');
-                $form->quill('content', __('Case Details'));
-            } else {
-
-                $form->display('title', __('Case Title'))->rules('required');
-                $form->radio('status', __('Case Status'))
-                    ->options([
-                        'Investigation'   => 'Under Investigation',
-                        'Closed' => 'Closed',
-                    ]);
-                $form->quill('content', __('Case Details'))->disable(true);
+        $form->divider('Case Basic Information');
+        $u = Admin::user();
+        $form->hidden('administrator_id')->default($u->id); 
+        if ($form->isCreating()) {
+            $form->text('title', __('Case Title'))->rules('required');
+            $options = [
+                'Investigation'   => 'Under Investigation',
+                'Closed' => 'Closed',
+                'Pending' => 'Pending',
+            ];
+            if ($u->isRole('guest')) {
+                $options = [
+                    'Pedning' => 'Pending'
+                ];
             }
-        })->tab('Contributors', function ($form) {
+            $form->radioCard('status', __('Case Status'))
+                ->options($options)
+                ->rules('required')
+                ->default('Pending');
+            $form->quill('content', __('Case Details'));
+        } else {
+
+            $form->display('title', __('Case Title'))->rules('required');
+            $form->radio('status', __('Case Status'))
+                ->options([
+                    'Investigation'   => 'Under Investigation',
+                    'Closed' => 'Closed',
+                ]);
+            $form->quill('content', __('Case Details'))->disable(true);
+        }
+
+
+        if (!$u->isRole('guest')) {
+            $form->divider('Contributors');
             $form->hasMany('contributors', 'Contributors', function (Form\NestedForm $form) {
                 $form->select('administrator_id', __('Contributor'))
                     ->options(Administrator::all()->pluck('name', 'id'))
                     ->rules('required');
                 $form->hidden('notified')->default('No');
             });
-        })->tab('Attachments', function ($form) {
-            $form->hasMany('attachments', function (Form\NestedForm $form) {
-                $form->hidden('administrator_id')->default(Admin::user()->id);
-                $form->text('name', __('Attachment Title'))->rules('required');
-                $form->file('file', __('Attachment File'));
-            });
-        })->tab('Findings', function ($form) {
+        }
+        $form->divider('Attachments');
+        $form->hidden('administrator_id')->default(Admin::user()->id);
+        $form->hasMany('attachments', function (Form\NestedForm $form) {
+            $u = Admin::user();
+            $form->hidden('administrator_id')->default($u->id);  
+            $form->text('name', __('Attachment Title'))->rules('required');
+            $form->file('file', __('Attachment File'));
+        });
+
+        if (!$u->isRole('guest')) {
+            $form->divider('Findings');
             $form->hasMany('findings', function (Form\NestedForm $form) {
                 $form->hidden('administrator_id')->default(Admin::user()->id);
                 $form->text('title', __('Title'))->rules('required');
                 $form->quill('details', __('Details'))->rules('required');
             });
-        });
+        }
 
+
+        $form->disableCreatingCheck();
+        $form->disableViewCheck();
+        $form->disableReset();
         return $form;
     }
 }

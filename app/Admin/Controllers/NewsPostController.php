@@ -27,6 +27,20 @@ class NewsPostController extends AdminController
     {
 
         $grid = new Grid(new NewsPost());
+
+        $u = Admin::user();
+        $grid->disableBatchActions();
+        if ($u->isRole('guest')) {
+            $grid->model()
+                ->orderBy('id', 'Desc')
+                ->where([]);
+            $grid->disableExport();
+            $grid->disableCreateButton();
+            $grid->disableFilter();
+        }
+
+
+        $grid->quickSearch('title');
         $grid->disableBatchActions();
         $grid->model()->orderBy('id', 'desc');
 
@@ -35,6 +49,7 @@ class NewsPostController extends AdminController
             ->display(function ($created_at) {
                 return date('d-m-Y', strtotime($created_at));
             })->sortable();
+        $grid->column('title', __('Title'))->sortable();
         $grid->column('administrator_id', __('Posted By'))
             ->display(function ($administrator_id) {
                 if ($this->administrator == null) {
@@ -42,6 +57,8 @@ class NewsPostController extends AdminController
                 }
                 return $this->administrator->name;
             })->sortable();
+
+
         $grid->column('news_post_category_id', __('News Post Category'))
             ->display(function ($administrator_id) {
                 if ($this->category == null) {
@@ -49,8 +66,6 @@ class NewsPostController extends AdminController
                 }
                 return $this->category->name;
             })->sortable();
-
-
 
         return $grid;
     }
