@@ -33,6 +33,10 @@ class HomeController extends Controller
         $content->row(function (Row $row) {
             $row->column(6, function (Column $column) {
                 $u = Admin::user();
+
+                $column->append(view('graphs.status-chats', []));
+                return $column;
+
                 $conditions_pending = [
                     'status' => 'Pending',
                 ];
