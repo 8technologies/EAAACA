@@ -1,5 +1,7 @@
 <?php
 
+
+
 /**
  * Laravel-admin - admin builder based on Laravel.
  * @author z-song <https://github.com/z-song>
@@ -38,17 +40,26 @@ use Illuminate\Support\Facades\Auth;
 use App\Admin\Extensions\Nav\Shortcut;
 use App\Admin\Extensions\Nav\Dropdown;
 
+$u = Admin::user();
+if ($u != null) {
+    if ($u->status != 1) {
+        $pending_url = url('pending');
+        die("<script>location.href='$pending_url';</script>");
+        return;
+    }
+}
+
 //form remove continue editing
 Encore\Admin\Form::init(function (Encore\Admin\Form $form) {
     $form->tools(function ($tools) {
         $tools->disableDelete();
         $tools->disableView();
     });
-    $form->disableReset(); 
+    $form->disableReset();
     $form->disableCreatingCheck();
     $form->disableViewCheck();
 });
- 
+
 
 Utils::system_boot();
 

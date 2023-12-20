@@ -24,14 +24,7 @@ class HomeController extends Controller
 {
     public function index(Content $content)
     {
-        /* $u = Admin::user();
-        if ($u != null) {
-            if ($u->status != 1) {
-                $pending_url = url('pending');
-                die("<script>location.href='$pending_url';</script>");
-                return;
-            }
-        }  */
+ 
         Utils::my_boot();
         $u = Auth::user();
         $content
