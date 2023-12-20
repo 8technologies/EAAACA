@@ -24,41 +24,24 @@ use App\Models\Utils;
 
 <div class="card mb-4 mb-md-5 border-0">
     <!--begin::Header-->
-    <div class="d-flex justify-content-between px-3 px-md-4 ">
+    <div class="d-flex justify-content-between px-3 px-md-4 pt-3">
         <h3>
-            <b>By Status</b>
-        </h3>
-        <div class="dropdown">
-            <button class="btn btn-sm btn-primary mt-md-4 mt-4 dropdown-toggle" type="button" id="exportDropdown"
-                data-bs-toggle="dropdown" aria-expanded="false">
-                Action
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                <li><a class="dropdown-item" href="#" id="exportCAJpegBtn">Export JPEG</a></li>
-                <li><a class="dropdown-item" href="#" id="exportCACsvBtn">Export CSV</a></li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="{{ url('/cases') }}">View All</a></li>
-            </ul>
-        </div>
+            <b>Requests By Member States</b>
+        </h3> 
     </div>
     <div class="card-body py-2 py-md-3">
 
         <canvas id="bar" style="width: 100%;"></canvas>
         <script>
             $(function() {
-
-                function randomScalingFactor() {
-                    return Math.floor(Math.random() * 100);
-                }
+ 
 
                 window.chartColors = {
+                    blue: 'rgb(14, 62, 235)',
                     red: 'rgb(255, 99, 132)',
                     orange: 'rgb(255, 159, 64)',
                     yellow: 'rgb(255, 205, 86)',
                     green: 'rgb(75, 192, 192)',
-                    blue: 'rgb(54, 162, 235)',
                     purple: 'rgb(153, 102, 255)',
                     grey: 'rgb(201, 203, 207)'
                 };
@@ -66,14 +49,15 @@ use App\Models\Utils;
                 var config = {
                     type: 'bar',
                     data: {
-                        labels: <?php echo json_encode([]); ?>,
+                        labels: <?php echo json_encode($labels); ?>,
                         datasets: [{
-                            label: 'CA',
-                            data: <?php echo json_encode([]); ?>,
-                            backgroundColor: [
-                                window.chartColors.red,
+                            label: 'Incoming Requests',
+                            data: <?php echo json_encode($data); ?>,
+                            backgroundColor: window.chartColors.blue,
+                            /* backgroundColor: [
                                 window.chartColors.orange,
                                 window.chartColors.yellow,
+                                window.chartColors.red,
                                 window.chartColors.green,
                                 window.chartColors.blue,
                                 window.chartColors.grey,
@@ -82,7 +66,7 @@ use App\Models\Utils;
                                 'green',
                                 'blue',
                                 'red',
-                            ],
+                            ], */
                         }]
                     },
                     options: {
@@ -93,7 +77,7 @@ use App\Models\Utils;
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Chart.js Bar Chart'
                         },
                         scales: {
@@ -104,7 +88,7 @@ use App\Models\Utils;
                                 },
                                 title: {
                                     display: true,
-                                    text: 'Number of Cases'
+                                    text: 'Number of Requests'
                                 }
                             }
                         },
@@ -118,23 +102,8 @@ use App\Models\Utils;
                 var ctx = document.getElementById('bar').getContext('2d');
                 var chart = new Chart(ctx, config);
 
-                // Export as JPEG (White Background)
-                var exportCAJpegBtn = document.getElementById('exportCAJpegBtn');
-                exportCAJpegBtn.addEventListener('click', function() {
-                    var canvas = document.getElementById('bar');
-                    var context = canvas.getContext('2d');
-                    context.globalCompositeOperation = 'destination-over';
-                    context.fillStyle = 'white';
-                    context.fillRect(0, 0, canvas.width, canvas.height);
-                    var image = canvas.toDataURL('image/jpeg', 1.0)
-                        .replace('image/jpeg', 'image/octet-stream');
-                    var link = document.createElement('a');
-                    link.href = image;
-                    link.download = 'ca_cases.jpg';
-                    link.click();
-                });
+              
 
-               
 
             });
         </script>

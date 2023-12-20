@@ -1,3 +1,9 @@
+<?php
+$u = Admin::user();
+if ($u == null) {
+    die('User account not found.');
+}
+?>
 <!DOCTYPE html>
 <html>
 
@@ -8,8 +14,9 @@
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
-
-    <link rel="shortcut icon" href="{{ url('public/assets/images/logo.png') }}">
+    @if (!is_null($favicon = Admin::favicon()))
+        <link rel="shortcut icon" href="{{ $favicon }}">
+    @endif
 
     <!-- Bootstrap 3.3.5 -->
     <link rel="stylesheet" href="{{ admin_asset('vendor/laravel-admin/AdminLTE/bootstrap/css/bootstrap.min.css') }}">
@@ -43,55 +50,39 @@
                 <img width="75%" src="{{ url('public/assets/images/arinea.jpeg') }}" alt="">
             </center>
             <br>
-            <p class="text-center" style="font-size: 18px;">Welcome To</p>
-            <p class="login-box-msg h3" style="color: black; font-weight: 800;">ARINEA Secure Information Exchange Platform</p>
+            <p class="login-box-msg h3" style="color: black; font-weight: 800;">ARINEA Secure Information Exchange
+                Platform</p>
             <hr style="background-color: #1D55C4; height: 5px;">
-            <br>
-            <p class="text-center" style="font-size: 18px;">Login</p>
-            <br>
 
-            <form action="{{ admin_url('auth/login') }}" method="post">
-                <div class="form-group has-feedback {!! !$errors->has('username') ?: 'has-error' !!}">
+            <p class="text-center" style="font-size: 18px; color: black;">
+                <b>Account Pending for Verification</b>
+            </p>
 
-                    @if ($errors->has('username'))
-                        @foreach ($errors->get('username') as $message)
-                            <label class="control-label" for="inputError"><i
-                                    class="fa fa-times-circle-o"></i>{{ $message }}</label><br>
-                        @endforeach
-                    @endif
+            <p>Dear <b>{{ $u->name }}</b>,
 
-                    <input type="text" class="form-control" placeholder="{{ trans('admin.username') }}"
-                        name="username" value="{{ old('username') }}">
-                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                Thank you for registering with <b>ARINEA Secure Information Exchange Platform</b>. Your account is
+                currently pending for verification.
+            </p>
+            <p> If you need assistance, feel free to contact our
+                support team at <b>support@eaaaca.com</b>. We appreciate your cooperation and look forward to having you
+                fully onboarded.</p>
+            <hr>
+            <div class="row ">
+                <!-- /.col -->
+                <div class="col-xs-8">
+                    <a style="color: blue" href="{{ admin_url('/') }}"><b>Refresh Page</b></a>
                 </div>
-                <div class="form-group has-feedback {!! !$errors->has('password') ?: 'has-error' !!}">
-
-                    @if ($errors->has('password'))
-                        @foreach ($errors->get('password') as $message)
-                            <label class="control-label" for="inputError"><i
-                                    class="fa fa-times-circle-o"></i>{{ $message }}</label><br>
-                        @endforeach
-                    @endif
-
-                    <input type="password" class="form-control" placeholder="{{ trans('admin.password') }}"
-                        name="password">
-                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                </div>
-                <div class="row">
-                    <div class="col-xs-8">
-                        <a href="{{ url('auth/register') }}"><b>Create Account</b></a>
-                        <input type="hidden" name="remember" value="1">
-                    </div>
-                    <!-- /.col -->
-                    <div class="col-xs-4">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <button type="submit"
-                            class="btn btn-primary btn-block btn-flat">{{ trans('admin.login') }}</button>
-                    </div>
-                    <!-- /.col -->
-                </div>
-            </form>
+                <!-- /.col -->
+            </div>
             <br>
+            <div class="row">
+                <!-- /.col -->
+
+                <div class="col-xs-8">
+                    <a style="color: rgb(230, 13, 13);" href="{{ admin_url('auth/logout') }}"><b>Logout</b></a>
+                </div>
+                <!-- /.col -->
+            </div>
 
         </div>
         <!-- /.login-box-body -->

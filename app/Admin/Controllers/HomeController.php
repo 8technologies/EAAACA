@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Country;
 use App\Models\Event;
 use App\Models\InformationRequest;
 use App\Models\Project;
@@ -23,6 +24,14 @@ class HomeController extends Controller
 {
     public function index(Content $content)
     {
+        /* $u = Admin::user();
+        if ($u != null) {
+            if ($u->status != 1) {
+                $pending_url = url('pending');
+                die("<script>location.href='$pending_url';</script>");
+                return;
+            }
+        }  */
         Utils::my_boot();
         $u = Auth::user();
         $content
@@ -33,10 +42,6 @@ class HomeController extends Controller
         $content->row(function (Row $row) {
             $row->column(6, function (Column $column) {
                 $u = Admin::user();
-
-                $column->append(view('graphs.status-chats', []));
-                return $column;
-
                 $conditions_pending = [
                     'status' => 'Pending',
                 ];
@@ -49,13 +54,46 @@ class HomeController extends Controller
                 }
                 $column->append(view('widgets.dashboard-segment-1', [
                     'title' => 'Pending Requests',
+                    'users' => User::count(),
                     'pending_requests' => InformationRequest::where($conditions_pending)->get(),
                     'waiting_requests' => InformationRequest::where($conditions_waiting)->get(),
                     'events' => Event::where([])->where('event_date', '>=', Carbon::now()->format('Y-m-d'))->orderBy('id', 'desc')->get()
                 ]));
+
+                $countries = [];
+                $requests = [];
+                foreach (Country::all() as $key => $value) {
+                    $countries[] = $value->name;
+                    $requests[] = InformationRequest::where([
+                        'sender_country_id' => $value->id,
+                    ])->count();
+                }
+
+                $column->append(view('graphs.status-chats', [
+                    'labels' => $countries,
+                    'data' => $requests,
+                ]));
             });
             $row->column(6, function (Column $column) {
-                $column->append(Dashboard::dashboard_calender());
+
+                $countries = [];
+                $requests = [];
+                $requests[] = InformationRequest::where(['status' => "Pending"])->count();
+                $requests[] = InformationRequest::where(['status' => "Waiting for response"])->count();
+                $requests[] = InformationRequest::where(['status' => "Halted"])->count();
+                $requests[] = InformationRequest::where(['status' => "Completed"])->count();
+
+                $column->append(view('graphs.status-pie-chats', [
+                    'labels' => [
+                        'Pending',
+                        'Waiting for response',
+                        'Halted',
+                        'Completed',
+                    ],
+                    'data' => $requests,
+                ]));
+
+                //$column->append(Dashboard::dashboard_calender());
             });
         });
 

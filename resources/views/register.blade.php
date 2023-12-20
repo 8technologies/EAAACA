@@ -41,11 +41,11 @@
 
             <br>
             <center>
-                <img width="15%" src="{{ url('public/assets/images/logo.png') }}" alt="">
+                <img width="75%" src="{{ url('public/assets/images/arinea.jpeg') }}" alt="">
             </center>
             <br>
             <p class="text-center" style="font-size: 18px;">Welcome To</p>
-            <p class="login-box-msg h3" style="color: black; font-weight: 800;">EAACA SECURE PORTAL</p>
+            <p class="login-box-msg h3" style="color: black; font-weight: 800;">ARINEA Secure Information Exchange Platform</p>
             <hr style="background-color: #1D55C4; height: 5px;">
 
             <p class="text-center" style="font-size: 18px;">Register</p>
@@ -59,6 +59,7 @@
                                     class="fa fa-times-circle-o"></i>{{ $name }}</label><br>
                         @endforeach
                     @endif
+                    <label for="name">Full name</label>
                     <input type="text" class="form-control" placeholder="{{ 'Full name' }}" name="name"
                         value="{{ old('name') }}" required>
                     <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
@@ -72,8 +73,22 @@
                                     class="fa fa-times-circle-o"></i>{{ $message }}</label><br>
                         @endforeach
                     @endif
-                    <input type="text" class="form-control" placeholder="Email Address" name="email"
-                        value="{{ old('email') }}">
+                    <label for="bank">Organization Name</label>
+                    <input type="text"id="bank" class="form-control" placeholder="Organization Name"
+                        name="bank_name" value="{{ old('bank_name') }}">
+                    <span class="glyphicon glyphicon-email form-control-feedback"></span>
+                </div>
+
+                <div class="form-group has-feedback {!! !$errors->has('email') ?: 'has-error' !!}">
+                    @if ($errors->has('email'))
+                        @foreach ($errors->get('email') as $message)
+                            <label class="control-label" for="inputError"><i
+                                    class="fa fa-times-circle-o"></i>{{ $message }}</label><br>
+                        @endforeach
+                    @endif
+                    <label for="email">Organization Email Address</label>
+                    <input type="text"id="email" class="form-control" placeholder="Organization Email Address"
+                        name="email" value="{{ old('email') }}">
                     <span class="glyphicon glyphicon-email form-control-feedback"></span>
                 </div>
 
@@ -85,9 +100,9 @@
                                     class="fa fa-times-circle-o"></i>{{ $message }}</label><br>
                         @endforeach
                     @endif
-
-                    <input type="password" class="form-control" placeholder="{{ trans('admin.password') }}"
-                        name="password">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control"
+                        placeholder="{{ trans('admin.password') }}" name="password">
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                 </div>
 
@@ -99,13 +114,14 @@
                                     class="fa fa-times-circle-o"></i>{{ $message }}</label><br>
                         @endforeach
                     @endif
-
-                    <input type="password" class="form-control" placeholder="Re-Password" name="password_1">
+                    <label for="password2">Re-enter Password</label>
+                    <input type="password" id="password2" class="form-control" placeholder="Re-Password"
+                        name="password_1">
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                 </div>
 
                 <div class="row">
-                  
+
                     <!-- /.col -->
                     <div class="col-xs-4">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">

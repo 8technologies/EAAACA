@@ -21,6 +21,10 @@ class MainController extends BaseController
   {
     return view('register');
   }
+  public function pending()
+  {
+    return view('pending');
+  }
 
   public function index()
   {

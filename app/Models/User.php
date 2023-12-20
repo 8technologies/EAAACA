@@ -39,4 +39,32 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(UserHasProgram::class, 'user_id');
     }
+
+    //boot
+    public static function boot()
+    {
+        parent::boot();
+        static::updating(function ($model) {
+            $model2 = User::find($model->id);
+            if ($model2 == null) {
+                throw new \Exception("User not found");
+            }
+            if ($model2->status != $model->status) {
+                if ($model->status == 1) {
+                    $data['email'] = $model->email;
+                    $data['name'] = $model->name;
+                    $data['subject'] = 'Account Verification';
+                    $login_link = admin_url('');
+                    $data['body'] = 'Dear ' . $model->name . ',<br><br>Your account has been verified. You can now use the following link to login to your account.<br><b>LINK</b>: <a href="' . $login_link . '">' . $login_link . '</a><br><br>Regards,<br>Admin';
+                    $data['view'] = 'mail';
+                    $data['data'] = $data['body'];
+                    try {
+                        Utils::mail_sender($data);
+                    } catch (\Throwable $th) {
+                        return;
+                    } 
+                }
+            }
+        });
+    }
 }

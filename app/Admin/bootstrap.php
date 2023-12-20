@@ -18,11 +18,37 @@
  *
  */
 
+use App\Models\User;
+use Encore\Admin\Auth\Database\Administrator;
+
+/* $u = User::find(2);
+$rand_no = rand(1, 1000000);
+echo "RAND NO. <b>$rand_no</b><br>";
+echo "OLD U NO. <b>{$u->status}</b><br><hr>";
+$u->status = $rand_no;
+
+$u->save();
+
+
+die(); */
+
 use App\Models\Utils;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Auth;
 use App\Admin\Extensions\Nav\Shortcut;
 use App\Admin\Extensions\Nav\Dropdown;
+
+//form remove continue editing
+Encore\Admin\Form::init(function (Encore\Admin\Form $form) {
+    $form->tools(function ($tools) {
+        $tools->disableDelete();
+        $tools->disableView();
+    });
+    $form->disableReset(); 
+    $form->disableCreatingCheck();
+    $form->disableViewCheck();
+});
+ 
 
 Utils::system_boot();
 
@@ -35,7 +61,7 @@ Admin::js('/assets/js/jquery-confirm.min.js');
 Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
 
     $u = Auth::user();
-    
+
     /*     $navbar->left(view('admin.search-bar', [
         'u' => $u
     ]));
@@ -56,10 +82,10 @@ Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
     ], 'fa-wpforms')->title('Register new'));
 
     $navbar->left(new Dropdown()); */
-    $data['notifications'] = Utils::get_user_notifications($u); 
-    $navbar->right(view('nav-bar-notification',$data));
+    $data['notifications'] = Utils::get_user_notifications($u);
+    $navbar->right(view('nav-bar-notification', $data));
 
- /*    $navbar->right(Shortcut::make([
+    /*    $navbar->right(Shortcut::make([
         'How to update your profile' => '',
         'How to register a new person with disability' => '',
         'How to register as service provider' => '',

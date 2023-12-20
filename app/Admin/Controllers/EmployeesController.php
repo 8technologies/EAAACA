@@ -84,7 +84,27 @@ class EmployeesController extends AdminController
         $grid->column('date_of_birth', __('D.O.B'))->sortable();
         $grid->column('nationality', __('Nationality'))->sortable();
         $grid->column('sex', __('Gender'));
-        $grid->column('place_of_birth', __('Place of birth'))->sortable();
+        $grid->column('status', __('Status'))
+
+            ->display(function ($x) {
+                $x = intval($x);
+                if ($x == 1) {
+                    return 'Active';
+                }else if ($x == 2) {
+                    return 'Inactive';
+                }
+                return 'Pending';
+            })
+            ->dot([
+                0 => 'warning',
+                1 => 'success',
+            ], 'danger')->sortable()
+            ->filter([
+                0 => 'Pending',
+                1 => 'Active',
+                2 => 'Inactive',
+            ]); 
+
         $grid->column('home_address', __('Home address'))->hide();
         $grid->column('current_address', __('Current address'))->hide();
         $grid->column('religion', __('Religion'))->hide();
@@ -263,7 +283,13 @@ class EmployeesController extends AdminController
         });
 
 
-
+        $form->divider('ACCOUNT STATUS');
+        $form->radioCard('status', 'Status')
+        ->options([
+            1 => 'Active',
+            0 => 'Pending',
+            2 => 'Inactive',
+        ]);
 
         $form->disableReset();
         $form->disableViewCheck();

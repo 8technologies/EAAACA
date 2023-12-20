@@ -64,7 +64,7 @@ class InformationRequest extends Model
         $notification->body = 'Dear ' . $receiver->name . ', <br> <br> ' . $sender->name . ' has created Information Request #' . $this->id . ' on ' . $this->created_at . '. <br> <br> Please login to the system to view the details. <br> <br> ';
         $notification->body .= '<b><a href="' . $notification->url . '">Reiview Request</a><br><br>' . 'Regards, <br> <br> ' . $sender->name;
         $notification->save();
-    }
+    } 
 
 
     //organization

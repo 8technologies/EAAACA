@@ -42,16 +42,16 @@ if (!isset($title)) {
             <div class="col-md-4">
                 @include('widgets.box-6', [
                     'is_dark' => false,
-                    'title' => 'Upcoming Events',
+                    'title' => 'Registered Users',
                     'icon' => 'calendar-event-fill',
-                    'number' => count($events),
+                    'number' => $users,
                     'link' => 'javascript:;',
                 ])
             </div>
         </div>
     </div>
 </div>
-<div class="row">
+{{-- <div class="row">
     <div class="col-md-6">
         @include('dashboard.upcoming-events', [
             'items' => $events->take(8),
@@ -63,3 +63,4 @@ if (!isset($title)) {
         ])
     </div>
 </div>
+ --}}

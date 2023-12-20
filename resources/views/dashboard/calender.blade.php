@@ -1,5 +1,8 @@
 <?php
 use App\Models\Utils;
+use App\Models\NewsPost;
+//last news post
+$last_news_post = NewsPost::orderBy('id', 'desc')->first();
 if (!isset($display_notice_board)) {
     $display_notice_board = false;
 }
@@ -16,12 +19,12 @@ if (!isset($display_notice_board)) {
         <div class="col-12">
             <div class="card">
                 <div class="card-body p-5 p-md-4">
-                    <h3 class="fs-30 fw-800 mb-3">Notice Board</h3>
+                    <h3 class="fs-30 fw-800 mb-3">ARINEA Updates</h3>
                     <hr>
-                    <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod ex impedit aliquam, voluptatum
-                        ipsa
-                        laboriosam cum sint nisi ... <a href="javascript:;">Read More</a>
+                    <p class="fs-16 mb-4">
+                        {!! $last_news_post->title !!}
+                    </p>
+                    <a href="{{ url('news-posts') }}" class="btn btn-primary btn-sm">View More</a> 
                     </p>
                 </div>
             </div>

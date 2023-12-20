@@ -40,6 +40,8 @@ class InformationRequestController extends AdminController
         // die(); */
         $grid = new Grid(new InformationRequest());
         $grid->disableBatchActions();
+        $grid->disableActions();
+        $grid->quickSearch('request_reference_no')->placeholder('Search...');
         $conds = [];
         $u = Admin::user();
         if (!$u->isRole('admin')) {
@@ -73,10 +75,7 @@ class InformationRequestController extends AdminController
                 }
                 return $this->receiver->name;
             })->sortable();
-        $grid->column('cretaed_at', __('Request Date'))
-            ->display(function ($cretaed_at) {
-                return date('d-m-Y', strtotime($cretaed_at));
-            })->sortable();
+     
         $grid->column('request_reference_no', __('Request Reff No.'))->sortable();
         $grid->column('description_of_circumstances', __('Description of circumstances'))->sortable();
         $grid->column('purpose_for_information_request', __('Purpose for information request'))->hide();
@@ -98,6 +97,11 @@ class InformationRequestController extends AdminController
                 'Completed' => 'success',
             ], 'warning')
             ->sortable();
+        $grid->column('view', __('View'))
+            ->display(function ($view) {
+                $link = admin_url('information-requests/' . $this->id . "/edit");
+                return "<a href='$link' ><b>View</b></a>";
+            })->sortable();
 
         return $grid;
     }

@@ -57,7 +57,7 @@ class AccountController extends BaseController
         ])->fails()) {
             return back()
                 ->withErrors(['email' => 'Enter a valid email address.'])
-                ->withInput(); 
+                ->withInput();
         }
 
         if (Validator::make($_POST, [
@@ -170,6 +170,8 @@ class AccountController extends BaseController
             $admin = new Administrator();
             $admin->username = $r->email;
             $admin->name = $r->name;
+            $admin->bank_name = $r->bank_name;
+            $admin->status = 0;
             //$admin->avatar = 'user.png';
             $admin->password = password_hash($r->password, PASSWORD_DEFAULT);
 

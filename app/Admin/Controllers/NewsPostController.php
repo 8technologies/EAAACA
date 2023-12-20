@@ -27,6 +27,7 @@ class NewsPostController extends AdminController
     {
 
         $grid = new Grid(new NewsPost());
+        $grid->disableActions();
 
         $u = Admin::user();
         $grid->disableBatchActions();
@@ -57,8 +58,11 @@ class NewsPostController extends AdminController
             })->sortable();
 
 
-        $grid->column('news_post_category_id', __('News Post Category'))
+        $grid->column('news_post_category_id', __('View'))
             ->display(function ($administrator_id) {
+                $link = admin_url('news-posts/' . $this->id);
+                return "<a href='$link' ><b>View</b></a>";
+
                 if ($this->category == null) {
                     return '-';
                 }
@@ -78,14 +82,25 @@ class NewsPostController extends AdminController
     {
         $show = new Show(NewsPost::findOrFail($id));
 
-        $show->field('id', __('Id'));
-        $show->field('created_at', __('Created at'));
-        $show->field('updated_at', __('Updated at'));
-        $show->field('administrator_id', __('Administrator id'));
-        $show->field('news_post_category_id', __('News post category id'));
+        $u = Admin::user();
+        if (!$u->isRole('admin')) {
+            $show->panel()
+                ->tools(function ($tools) {
+                    $tools->disableEdit();
+                    $tools->disableDelete();
+                });
+        }
+
+        $show->field('created_at', __('Date'))
+            ->display(function ($created_at) {
+                return date('d-m-Y', strtotime($created_at));
+            });
         $show->field('title', __('Title'));
-        $show->field('details', __('Details'));
-        $show->field('photo', __('Photo'));
+        $show->field('details', __('Details'))
+            ->unescape()
+            ->as(function ($details) {
+                return $details;
+            });
 
         return $show;
     }

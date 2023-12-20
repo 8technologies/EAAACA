@@ -19,6 +19,7 @@ Route::get('/gen-form', function () {
 
 Route::get('generate-class', [MainController::class, 'generate_class']);
 Route::get('auth/register', [MainController::class, 'register'])->name('form'); 
+Route::get('pending', [MainController::class, 'pending'])->name('pending'); 
 Route::get('/gen', function () {
     die(Gen::find($_GET['id'])->do_get());
 })->name("gen");
