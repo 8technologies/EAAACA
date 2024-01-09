@@ -120,11 +120,11 @@ class AuthController extends Controller
         }
 
         if ($this->guard()->attempt([
-            'username' => $request->username,
+            'email' => $request->username,
             'password' => $request->password,
         ], true)) {
             if ($this->guard()->attempt([
-                'email' => $request->username,
+                'username' => $request->username,
                 'password' => $request->password,
             ], true)) {
                 if ($this->guard()->attempt([
