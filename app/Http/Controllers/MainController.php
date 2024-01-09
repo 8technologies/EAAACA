@@ -26,6 +26,11 @@ class MainController extends BaseController
     return view('pending');
   }
 
+  public function two_fa()
+  {
+    return view('two_fa');
+  }
+
   public function index()
   {
 

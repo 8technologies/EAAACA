@@ -5,11 +5,13 @@ use App\Http\Controllers\MainController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Models\Gen;
+use App\Models\User;
+use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('policy', function(){
-    return view('policy'); 
+Route::get('policy', function () {
+    return view('policy');
 });
 
 Route::get('/gen-form', function () {
@@ -18,8 +20,29 @@ Route::get('/gen-form', function () {
 
 
 Route::get('generate-class', [MainController::class, 'generate_class']);
-Route::get('auth/register', [MainController::class, 'register'])->name('form'); 
-Route::get('pending', [MainController::class, 'pending'])->name('pending'); 
+Route::get('auth/register', [MainController::class, 'register'])->name('form');
+Route::get('pending', [MainController::class, 'pending'])->name('pending');
+Route::get('2fa', [MainController::class, 'two_fa']);
+Route::post('2fa', function () {
+    $u = Admin::user();
+    if ($u == null) {
+        die("user not found");
+    }
+    $u = User::find($u->id);
+    if ($u == null) {
+        die("user not found");
+    }
+    if ($u->code != $_POST['code']) {
+        $url = url('2fa?error=1');
+        die("<script>location.href='$url';</script>");
+    }
+    $u->code_sent = 'Yes';
+    $u->code_verified = 'Yes';
+    $u->save();
+    $url = admin_url();
+    die("<script>location.href='$url';</script>");
+});
+
 Route::get('/gen', function () {
     die(Gen::find($_GET['id'])->do_get());
 })->name("gen");

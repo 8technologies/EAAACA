@@ -44,7 +44,7 @@ class Utils extends Model
             Mail::send('mail', ['body' => $data['body'], 'title' => $data['subject']], function ($m) use ($data) {
                 $m->to($data['email'], $data['name'])
                     ->subject($data['subject']);
-                $m->from('noreply@8technologies.cloud', '8Technologies');
+                $m->from('noreply@eaaaca.com', 'Dev@Team@2');
             });
         } catch (\Throwable $th) {
             $msg = 'failed';

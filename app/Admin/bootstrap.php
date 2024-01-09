@@ -40,14 +40,76 @@ use Illuminate\Support\Facades\Auth;
 use App\Admin\Extensions\Nav\Shortcut;
 use App\Admin\Extensions\Nav\Dropdown;
 
-$u = Admin::user();
-if ($u != null) {
-    if ($u->status != 1) {
-        $pending_url = url('pending');
-        die("<script>location.href='$pending_url';</script>");
-        return;
+if (isset($_SERVER['REQUEST_URI'])) {
+    $explode = explode('/', $_SERVER['REQUEST_URI']);
+    if (in_array('logout', $explode)) {
+        $u = Admin::user();
+        if ($u != null) {
+            $u = User::find($u->id);
+            $u->code_sent = 'No';
+            $u->code = '';
+            $u->code_verified = 'No';
+            $u->save();
+        }
+        Auth::logout();
+        $url = admin_url();
     }
 }
+
+$explode = explode('/', $_SERVER['REQUEST_URI']);
+if (!in_array('logout', $explode)) {
+    $u = Admin::user();
+    if ($u != null) {
+        $u = User::find($u->id);
+        $receiver = $u;
+        if ($u->code_sent != 'Yes') {
+            $code = rand(100000, 999999);
+            $message = "Your EAAACA 2FA code is $code";
+            if (strlen($u->email) < 5) {
+                $u->email = $receiver->username;
+            }
+            if (strlen($u->email) < 5) {
+                die("email not found");
+            }
+            $data['email'] = $receiver->email;
+            $data['name'] = $receiver->name;
+            $data['subject'] = 'EAAACA 2FA Code';
+            $data['body'] = $message;
+            $data['view'] = 'mail';
+            $data['data'] = $message;
+            try {
+                Utils::mail_sender($data);
+                $u->code = $code;
+                $u->code_sent = 'Yes';
+                $u->code_verified = 'No';
+                $u->save();
+            } catch (\Throwable $th) {
+                $u->code_sent = 'No';
+                $u->code_verified = 'No';
+                //$u->save();
+                dd($th->getMessage());
+                return;
+            }
+            $pending_url = url('2fa');
+            die("<script>location.href='$pending_url';</script>");
+            return;
+        }
+
+        if ($u->code_verified != 'Yes') {
+            $pending_url = url('2fa');
+            die("<script>location.href='$pending_url';</script>");
+            return;
+        }
+
+        if ($u->status != 1) {
+            $pending_url = url('pending');
+            die("<script>location.href='$pending_url';</script>");
+            return;
+        }
+    }
+}
+
+
 
 //form remove continue editing
 Encore\Admin\Form::init(function (Encore\Admin\Form $form) {

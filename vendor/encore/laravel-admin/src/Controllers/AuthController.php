@@ -5,6 +5,7 @@ namespace Encore\Admin\Controllers;
 use App\Models\AdminRole;
 use App\Models\Campus;
 use App\Models\Company;
+use App\Models\User;
 use App\Models\Utils;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Facades\Admin;
@@ -127,7 +128,7 @@ class AuthController extends Controller
                 'password' => $request->password,
             ], true)) {
                 if ($this->guard()->attempt([
-                    'phone_number' => $request->username,
+                    'phone_number_1' => $request->username,
                     'password' => $request->password,
                 ], true)) {
                     return $this->sendLoginResponse($request);
@@ -290,6 +291,15 @@ class AuthController extends Controller
      */
     public function getLogout(Request $request)
     {
+        $u = Admin::user();
+        if($u != null){
+            $u = User::find($u->id);
+            $u->code_sent = 'No';
+            $u->code = '';
+            $u->code_verified = 'No';
+            $u->save();
+        }
+ 
         $this->guard()->logout();
 
         $request->session()->invalidate();
