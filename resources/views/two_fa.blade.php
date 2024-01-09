@@ -81,7 +81,7 @@ if ($u == null) {
                 <div class="row">
                     <!-- /.col -->
                     <div class="col-xs-8">
-                        <a style="color: blue" href="{{ admin_url('/') }}"><b>Resend Code</b></a>
+                        <a style="color: blue" href="{{ url('resend-code') }}"><b>Resend Code</b></a>
                     </div>
                     <!-- /.col -->
                 </div>
