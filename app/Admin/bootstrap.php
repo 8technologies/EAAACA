@@ -96,6 +96,8 @@ if (!in_array('logout', $explode)) {
         }
 
         if ($u->code_verified != 'Yes') {
+            /* $u->code_verified = 'Yes';
+            $u->save(); */
             $pending_url = url('2fa');
             die("<script>location.href='$pending_url';</script>");
             return;

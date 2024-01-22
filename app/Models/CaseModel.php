@@ -25,6 +25,24 @@ class CaseModel extends Model
         });
         static::updating(function ($m) {
         });
+        static::deleting(function ($m) {
+            //delete all attachments
+            $attachments = CaseModelAttachments::where('case_model_id', $m->id)->get();
+            foreach ($attachments as $attachment) {
+                $attachment->delete();
+            }
+            //delete all findings
+            $findings = CaseModelFinding::where('case_model_id', $m->id)->get();
+            foreach ($findings as $finding) {
+                $finding->delete();
+            }
+            //delete all contributors
+            $contributors = CaseContributor::where('case_model_id', $m->id)->get();
+            foreach ($contributors as $contributor) {
+                $contributor->delete();
+            }
+            
+        });
     }
 
     //cases to array for select dropdown
